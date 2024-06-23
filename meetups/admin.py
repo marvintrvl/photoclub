@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Meetup, MeetupImage
 
-# Register your models here.
+admin.site.register(Meetup)
+admin.site.register(MeetupImage)

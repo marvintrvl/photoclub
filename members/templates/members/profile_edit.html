@@ -1,0 +1,97 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 border-gray-200">
+                <h1 class="text-3xl font-bold mb-4">Profil bearbeiten</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="mb-4">
+                        <label for="id_full_name" class="block text-lg font-medium text-gray-50">Vollständiger Name</label>
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <p class="text-white">{{ user.full_name }}</p>
+                            </div>
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                        <input type="text" name="full_name" id="id_full_name" value="{{ user.full_name }}" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_email" class="block text-lg font-medium text-gray-50">E-Mail Adresse</label>
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <p class="text-white">{{ user.email }}</p>
+                            </div>
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                        <input type="email" name="email" id="id_email" value="{{ user.email }}" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_equipment" class="block text-lg font-medium text-gray-50">Ausrüstung</label>
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <p class="text-white">{{ user.equipment }}</p>
+                            </div>
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                        <textarea name="equipment" id="id_equipment" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.equipment }}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_interests" class="block text-lg font-medium text-gray-50">Interessen</label>
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <p class="text-white">{{ user.interests }}</p>
+                            </div>
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                        <textarea name="interests" id="id_interests" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.interests }}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_description" class="block text-lg font-medium text-gray-50">Beschreibung</label>
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <p class="text-white">{{ user.description }}</p>
+                            </div>
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                        <textarea name="description" id="id_description" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.description }}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_picture" class="mb-2 block text-lg font-medium text-gray-50">Profilbild</label>
+                        <div class="flex items-center">
+                            {% if user.picture %}
+                                <img src="{{ user.picture.url }}" alt="Profilbild" class="w-16 h-16 rounded-full mr-4">
+                            {% else %}
+                                <div class="w-16 h-16 rounded-full bg-gray-300 mr-4"></div>
+                            {% endif %}
+                            <input type="file" name="picture" id="id_picture" accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">Speichern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.edit-icon').on('click', function(e) {
+                e.preventDefault();
+                var $icon = $(this);
+                var $input = $icon.closest('.mb-4').find('input, textarea'); // Find input or textarea within the same container
+    
+                // Toggle visibility of input/textarea and paragraphs
+                $input.toggleClass('hidden');
+                $input.focus(); // Focus on the field for editing
+                $icon.parent().find('p').toggleClass('hidden');
+            });
+        });
+    </script>    
+{% endblock %}

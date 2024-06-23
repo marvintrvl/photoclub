@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'challenges',
     'members',
     'meetups',
+    'editing',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -58,13 +60,7 @@ ROOT_URLCONF = 'photoclub.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',
-            BASE_DIR / 'main/templates',
-            BASE_DIR / 'challenges/templates',
-            BASE_DIR / 'members/templates',
-            BASE_DIR / 'meetups/templates',
-        ],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,10 +127,14 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+import os
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'members.CustomUser'

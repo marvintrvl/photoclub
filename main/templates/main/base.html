@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fototreff Dresden</title>
     {% load static %}
+    <script src="https://kit.fontawesome.com/54f7ea8559.js" crossorigin="anonymous"></script>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white flex flex-col min-h-screen">
 
     <header class="header z-10">
-        <nav class="bg-gray-800 text-white">
+        <nav class="text-black">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
@@ -24,7 +25,7 @@
                             <a href="{% url 'meetups:meetup_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Treffen</a>
                             <a href="{% url 'members:member_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Mitglieder</a>
                             {% if user.is_authenticated %}
-                            <a href="{% url 'members:profile_detail' user.username %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Profil</a>
+                            <a href="{% url 'members:profile_edit' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Profil</a>
                             <a href="{% url 'members:logout' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Abmelden</a>
                             {% endif %}
                         </div>
@@ -44,7 +45,7 @@
                     <a href="{% url 'meetups:meetup_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Treffen</a>
                     <a href="{% url 'members:member_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Mitglieder</a>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'members:profile_detail' user.username %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Profil</a>
+                    <a href="{% url 'members:profile_edit' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Profil</a>
                     <a href="{% url 'members:logout' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Abmelden</a>
                     {% endif %}
                 </div>
@@ -70,14 +71,14 @@
                 </ul>
             </div>
             <div class="flex space-x-4">
-                <a href="#" class="hover:text-white">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" alt="Instagram" class="h-6 w-6">
+                <a href="https://www.instagram.com/fototreff_dresden/" class="hover:text-white text-3xl">
+                    <i class="fab fa-instagram"></i>
                 </a>
-                <a href="#" class="hover:text-white">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/discord.svg" alt="Discord" class="h-6 w-6">
+                <a href="https://discord.gg/PG3jDR7Kh7" class="hover:text-white text-3xl">
+                    <i class="fab fa-discord"></i>
                 </a>
-                <a href="#" class="hover:text-white">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/reddit.svg" alt="Reddit" class="h-6 w-6">
+                <a href="https://www.reddit.com/r/dresden/comments/1c0e5ii/gemeinsam_fotografieren_fototreff_dresden/" class="hover:text-white text-3xl">
+                    <i class="fab fa-reddit"></i>
                 </a>
             </div>
         </div>
