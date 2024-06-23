@@ -1,15 +1,32 @@
 {% extends "main/base.html" %}
 
 {% block content %}
-<section>
     <div class="hero">
-        <div class="flex flex-col items-center justify-center">
-            <h1 class="bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500 bg-clip-text text-transparent text-6xl font-bold inline-block">Willkommen beim Fototreff Dresden</h1>
-        </div>
-            <p class="mt-8 text-2xl">
-                Du bist es leid, alleine zu fotografieren? Dann bist du hier genau richtig! <br>
-                Wir sind eine Gruppe von Fotografen, die regelmäßig zusammenkommen, um gemeinsam zu fotografieren, sich auszutauschen und voneinander zu lernen.
-            </p>
+        <img src="static/images/hero.jpg" alt="Hero Image" class="w-full h-auto object-cover">
     </div>
-</section>
+    <div class="bg-fblue text-fgray pt-12">
+        <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="">
+                <h2 class="text-3xl font-normal text-white uppercase">Herzlich Willkommen</h2>
+                
+                <p class="text-white font-light mt-8">Herzlich willkommen in unserer Fototreff-Gruppe Dresden!
+                    Wir freuen uns sehr, dich in unserer Gemeinschaft von Hobbyfotografen begrüßen zu dürfen. Bei
+                    unseren regelmäßigen Treffen haben wir die Gelegenheit, gemeinsam auf Fototour zu gehen, uns
+                    auszutauschen und voneinander zu lernen. <br> <br>
+                    Auf unserem Discord-Server sind wir ebenfalls aktiv: Hier veröffentlichen wir unsere neuesten
+                    Bilder, veranstalten monatliche Challenges und diskutieren leidenschaftlich über technische
+                    Details und Tipps rund um die Fotografie. Egal ob du Anfänger bist oder schon seit Jahren
+                    fotografierst - bei uns ist jeder willkommen, der die Freude am Fotografieren teilt. <br> <br>
+                    Lass uns gemeinsam die Schönheit Dresdens durch unsere Kameralinsen entdecken und
+                    festhalten. Wir freuen uns auf viele inspirierende Momente und kreative Fotos mit dir! <br> <br>
+                    Herzliche Grüße, <br>
+                    Dein Fototreff-Team Dresden
+                </p>
+            </div>
+            <div class="">
+                <h2 class="text-3xl font-normal text-white uppercase">Unsere neuesten Mitglieder</h2>
+                <p class="text-white">Du bist herzlich eingeladen, Mitglied zu werden. Wir freuen uns über jedes neue Gesicht. Als Mitglied kannst du an unseren Foto-Challenges teilnehmen und an unseren Fotowalks teilnehmen.</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
