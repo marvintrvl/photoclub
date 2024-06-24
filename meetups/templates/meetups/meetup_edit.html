@@ -5,10 +5,43 @@
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold mb-4 text-center">Edit Meetup</h1>
         
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Save Changes</button>
+            {{ form.non_field_errors }}
+            
+            <div class="mb-4">
+                <label for="id_title" class="block text-lg font-medium text-gray-50">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_short_description" class="block text-lg font-medium text-gray-50">Short Description</label>
+                {{ form.short_description }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_detailed_description" class="block text-lg font-medium text-gray-50">Detailed Description</label>
+                {{ form.detailed_description }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_date" class="block text-lg font-medium text-gray-50">Date</label>
+                {{ form.date }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_location" class="block text-lg font-medium text-gray-50">Location</label>
+                {{ form.location }}
+            </div>
+
+            <div class="mb-4">
+                <label for="id_topic" class="block text-lg font-medium text-gray-50">Topic</label>
+                {{ form.topic }}
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
+            </div>
         </form>
         
     </div>

@@ -3,9 +3,11 @@
 
 {% block content %}
 
-    <div class="mt-12 mb-8 bg-fgreen-800 rounded-lg max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 border-gray-200">
+<div class="mt-12 mb-8 rounded-lg max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="overflow-hidden shadow-sm sm:rounded-lg">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-fgreen-800 rounded-lg p-4">
                 <h1 class="text-3xl font-bold mb-4">Profil bearbeiten</h1>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -77,22 +79,33 @@
                     </div>
                 </form>
             </div>
+            {% if user.is_staff %}
+            <div class="bg-fgreen-800 p-4 rounded-lg">
+                <h2 class="text-3xl font-bold mb-4 text-white">Admin Panel</h2>
+                <ul class="text-fgray-950">
+                    <li><a href="{% url 'meetups:meetup_edit' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Alle Meetups verwalten</a></li>
+                    <!-- Add more admin links as needed -->
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.edit-icon').on('click', function(e) {
-                e.preventDefault();
-                var $icon = $(this);
-                var $input = $icon.closest('.mb-4').find('input, textarea'); // Find input or textarea within the same container
-    
-                // Toggle visibility of input/textarea and paragraphs
-                $input.toggleClass('hidden');
-                $input.focus(); // Focus on the field for editing
-                $icon.parent().find('p').toggleClass('hidden');
-            });
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.edit-icon').on('click', function(e) {
+            e.preventDefault();
+            var $icon = $(this);
+            var $input = $icon.closest('.mb-4').find('input, textarea'); // Find input or textarea within the same container
+
+            // Toggle visibility of input/textarea and paragraphs
+            $input.toggleClass('hidden');
+            $input.focus(); // Focus on the field for editing
+            $icon.parent().find('p').toggleClass('hidden');
         });
-    </script>    
+    });
+</script>
+
 {% endblock %}
