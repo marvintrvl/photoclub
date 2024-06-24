@@ -12,7 +12,7 @@
                 <h2 class="text-white text-lg font-bold mt-2">{{ profile.full_name }}</h2>
                 
                 <!-- Add a link to view member details -->
-                <a href="{% url 'members:member_detail' profile.username %}" class="py-1 px-2 bg-forange-300 rounded-lg mt-2 text-blue-500 hover:text-blue-700">Prolif ansehen</a>
+                <a href="{% url 'members:member_detail' profile.username %}" class="py-1 px-2 bg-forange-300 rounded-lg mt-2 text-blue-500 hover:text-blue-700">Profil ansehen</a>
             </div>
             {% empty %}
             <div>No members found.</div>
