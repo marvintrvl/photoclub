@@ -1,26 +1,28 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-4xl">
+<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto max-w-3/4">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h1 class="text-2xl font-bold mb-4 text-center">{{ meetup.title }}</h1>
+        <h1 class="text-3xl font-bold mb-4 text-center">{{ meetup.title }}</h1>
         
         <div class="flex justify-center items-center mb-4">
-            <img src="{% static 'path_to_your_meetup_image.jpg' %}" alt="{{ meetup.title }}" class="w-64 h-64 object-cover rounded-md">
+            <!-- <img src="" alt="{{ meetup.title }}" class="w-64 h-64 object-cover rounded-md"> -->
         </div>
 
-        <p class="text-white text-lg">{{ meetup.detailed_description }}</p>
-        <p class="text-gray-400">Date: {{ meetup.date }}</p>
-        <p class="text-gray-400">Location: {{ meetup.location }}</p>
-        <p class="text-gray-400">Topic: {{ meetup.topic }}</p>
+        <p class="text-white text-lg leading-7">{{ meetup.detailed_description }}</p>
+        <p class="text-gray-400 mt-4"><span class="text-xl font-bold mb-2">Datum: </span> {{ meetup.date }}</p>
+        <p class="text-gray-400"><span class="text-xl font-bold mb-2">Ort: </span> {{ meetup.location }}</p>
+        <p class="text-gray-400"><span class="text-xl font-bold mb-2">Thema: </span> {{ meetup.topic }}</p>
 
         <!-- Assuming you have images related to the meetup -->
-        {% for image in meetup.images.all %}
-        <div class="flex justify-center items-center mt-4">
-            <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="w-64 h-64 object-cover rounded-md">
+        <div class="mt-8">
+            <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
+            {% for image in meetup.images.all %}        
+                <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="">        
+            {% empty %}
+            </div>
         </div>
-        {% empty %}
-        <p>No images available for this meetup.</p>
+        <p class="text-gray-400 mt-4">Es wurden noch keine Bilder von diesen Treffen hochgeladen.</p>
         {% endfor %}
         
     </div>

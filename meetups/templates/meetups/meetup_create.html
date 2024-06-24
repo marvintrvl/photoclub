@@ -1,0 +1,59 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mt-12 mb-8 rounded-lg min-w-1/2 mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-fgreen-800 rounded-lg p-4">
+            <h1 class="text-3xl font-bold mb-4 text-white">Neues Treffen erstellen</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-50">{{ field.label }}</label>
+                    <div class="flex items-center">
+                        <div class="flex-grow">
+                            <p class="text-white hidden"></p>
+                        </div>
+                        <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                    </div>
+                    {% if field.widget_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">{{ field.value|default_if_none:"" }}</textarea>
+                    {% else %}
+                        <input type="{{ field.widget_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="mt-6 text-fgray-900">
+                    <button type="submit" class="bg-forange-300 gray-800 text-fgray-950 px-4 py-2 rounded-md hover:bg-gray-700">Treffen erstellen</button>
+                </div>
+            </form>
+            <a href="{% url 'meetup_list_private' %}" class="inline-block mt-4 text-gray-400 hover:text-gray-200">Zurück zur Treffenverwaltung</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.edit-icon').on('click', function(e) {
+            e.preventDefault();
+            var $icon = $(this);
+            var $input = $icon.closest('.mb-4').find('input, textarea');
+            var $p = $icon.parent().find('p');
+
+            if ($input.val()) {
+                $p.text($input.val()).toggleClass('hidden');
+                $input.toggleClass('hidden');
+            }
+        });
+
+        $('input, textarea').on('input', function() {
+            var $input = $(this);
+            var $p = $input.closest('.mb-4').find('p');
+            $p.text($input.val());
+        });
+    });
+</script>
+{% endblock %}

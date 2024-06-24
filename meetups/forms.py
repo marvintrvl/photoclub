@@ -9,3 +9,12 @@ class MeetupForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
         }
+        labels = {
+            'title': 'Titel',
+            'short_description': 'Kurzbeschreibung',
+            'detailed_description': 'Detaillierte Beschreibung',
+            'date': 'Datum',
+            'time': 'Uhrzeit',
+            'location': 'Ort',
+            'topic': 'Thema',
+        }

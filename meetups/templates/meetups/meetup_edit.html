@@ -1,49 +1,51 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-4xl">
-    <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h1 class="text-2xl font-bold mb-4 text-center">Edit Meetup</h1>
-        
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            
-            <div class="mb-4">
-                <label for="id_title" class="block text-lg font-medium text-gray-50">Title</label>
-                {{ form.title }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_short_description" class="block text-lg font-medium text-gray-50">Short Description</label>
-                {{ form.short_description }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_detailed_description" class="block text-lg font-medium text-gray-50">Detailed Description</label>
-                {{ form.detailed_description }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_date" class="block text-lg font-medium text-gray-50">Date</label>
-                {{ form.date }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_location" class="block text-lg font-medium text-gray-50">Location</label>
-                {{ form.location }}
-            </div>
-
-            <div class="mb-4">
-                <label for="id_topic" class="block text-lg font-medium text-gray-50">Topic</label>
-                {{ form.topic }}
-            </div>
-
-            <div class="mt-6">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
-            </div>
-        </form>
-        
+<div class="mt-12 mb-8 rounded-lg max-w-3/4 mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-fgreen-800 rounded-lg p-4">
+            <h1 class="text-3xl font-bold mb-4 text-white">Treffen bearbeiten: {{ meetup.title }}</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-50">{{ field.label }}</label>
+                    <div class="flex items-center">
+                        <div class="flex-grow">
+                            <p class="text-white">{{ field.value|default_if_none:"" }}</p>
+                        </div>
+                        <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                    </div>
+                    {% if field.widget_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ field.value|default_if_none:"" }}</textarea>
+                    {% else %}
+                        <input type="{{ field.widget_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="mt-6 text-fgray-900">
+                    <button type="submit" class="bg-forange-300 gray-800 text-fgray-950 px-4 py-2 rounded-md hover:bg-gray-700">Änderungen speichern</button>
+                </div>
+            </form>
+            <a href="{% url 'meetup_list' %}" class="inline-block mt-4 text-gray-400 hover:text-gray-200">Zurück zur Treffenliste</a>
+        </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.edit-icon').on('click', function(e) {
+            e.preventDefault();
+            var $icon = $(this);
+            var $input = $icon.closest('.mb-4').find('input, textarea');
+
+            $input.toggleClass('hidden');
+            $input.focus();
+            $icon.parent().find('p').toggleClass('hidden');
+        });
+    });
+</script>
 {% endblock %}
