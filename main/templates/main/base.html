@@ -8,11 +8,11 @@
     <script src="https://kit.fontawesome.com/54f7ea8559.js" crossorigin="anonymous"></script>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
-<body class="bg-fblue flex flex-col min-h-screen">
+<body class="bg-fblue-950 flex flex-col min-h-screen">
 
     <header class="header z-10">
         <nav class="text-black">
-            <div class="md:bg-forange py-4 md:py-2 pl-6 pr-2 md:px-6 bg-fblue">
+            <div class="md:bg-forange-300 py-4 md:py-2 pl-6 pr-2 md:px-6 bg-fblue-950">
                 <div class="container hidden justify-end space-x-4 md:block">
                     <div class="flex justify-end space-x-4">
                         {% if not user.is_authenticated %}
@@ -32,7 +32,7 @@
                         <img src="/static/images/schriftzug_einzeln.jpg" class="w-2/4 h-auto mt-2 md:hidden">
                     </div>
                     <div class="flex md:hidden">
-                        <button id="mobile-menu-button" class="text-fgray hover:text-white focus:outline-none focus:text-white">
+                        <button id="mobile-menu-button" class="text-fgray-50 hover:text-white focus:outline-none focus:text-white">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
@@ -40,30 +40,42 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-fblue mx-auto w-full pb-12 hidden md:block">
+            <div class="bg-fblue-950 mx-auto w-full pb-12 hidden md:block">
                 <div>
                     <a href="{% url 'index' %}" class="flex items-center justify-center">
                         <img src="/static/images/logo.png" class="w-1/6 h-auto mt-2">
                     </a>
                 </div>
             </div>
-            <div class="relative -mt-6 hidden md:block mx-auto md:max-w-3/5 lg:max-w-3/4 bg-fgreen rounded-2xl py-1">
+            <div class="relative -mt-6 hidden md:block mx-auto md:max-w-3/5 lg:max-w-3/4 bg-fgreen-600 rounded-2xl py-1">
                 <div class="flex items-baseline justify-center space-x-4 uppercase">
-                    <a href="{% url 'challenges:challenge_list' %}" class="text-fgray hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Monatliche Foto-Challenges</a>
-                    <a href="{% url 'meetups:meetup_list' %}" class="text-fgray hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Treffen</a>
-                    <a href="{% url 'members:member_list' %}" class="text-fgray hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Mitglieder</a>
+                    <div class="relative group">
+                        <a href="#" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Challenges</a>
+                        <div class="absolute left-0 w-full bg-fgreen-600 mt-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <a href="{% url 'challenges:challenge_list' %}" class="text-fgray-50 block px-4 py-2 text-sm text-fgray hover:bg-fgreen-500 hover:text-white">Foto Challenges</a>
+                            <a href="{% url 'editing_list' %}" class="text-fgray-50 block px-4 py-2 text-sm text-fgray hover:bg-fgreen-500 hover:text-white">Editing Challenges</a>
+                        </div>
+                    </div>
+                    <a href="{% url 'meetups:meetup_list' %}" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Treffen</a>
+                    <a href="{% url 'members:member_list' %}" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Mitglieder</a>
                 </div>
             </div>
-            <div id="mobile-menu" class="fixed top-0 right-0 h-full w-full bg-fblue transform translate-x-full transition-transform duration-300 ease-in-out z-20">
+            <div id="mobile-menu" class="fixed top-0 right-0 h-full w-full bg-fblue-950 transform translate-x-full transition-transform duration-300 ease-in-out z-20">
                 <div class="flex justify-between items-center p-4">
-                    <button id="mobile-menu-close" class="text-fgray hover:text-white focus:outline-none focus:text-white">
+                    <button id="mobile-menu-close" class="text-fgray-50 hover:text-white focus:outline-none focus:text-white">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-fgray">
-                    <a href="{% url 'challenges:challenge_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Monatliche Foto-Challenges</a>
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-fgray-50">
+                    <div class="relative">
+                        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Challenges</a>
+                        <div class="ml-4 mt-1">
+                            <a href="{% url 'challenges:challenge_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Foto Challenges</a>
+                            <a href="{% url 'editing_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Editing Challenges</a>
+                        </div>
+                    </div>
                     <a href="{% url 'meetups:meetup_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Treffen</a>
                     <a href="{% url 'members:member_list' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Mitglieder</a>
                     {% if not user.is_authenticated %}
@@ -79,32 +91,29 @@
     </header>
 
     <!-- Main Content -->
-    <main class="text-fgray mx-auto -mt-5 flex-grow">
+    <main class="text-fgray-50 mx-auto -mt-5 flex-grow">
         {% block content %}
         {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-forange text-gray-200 mt-4">
+    <footer class="bg-forange-300 text-fgray-950 mt-4">
         <div class="container mx-auto p-4 flex justify-center items-center space-x-36">
             <div>
-                <ul class="space-y-2">
+                <ul class="space-x-2 flex flex-wrap justify-center items-center">
                     <li><a href="#" class="hover:text-white">Impressum</a></li>
+                    <li><span class="text-fgray-950">|</span></li>
                     <li><a href="#" class="hover:text-white">Kontakt</a></li>
+                    <li><span class="text-fgray-950">|</span></li>
                     <li><a href="#" class="hover:text-white">Cookie Einstellungen</a></li>
+                    <li><span class="text-fgray-950">|</span></li>
                     <li><a href="#" class="hover:text-white">Datenschutzerklärung</a></li>
+                    <li><span class="text-fgray-950">|</span></li>
+                    <li><a href="https://www.instagram.com/fototreff_dresden/" class="hover:text-white text-3xl">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </li>
                 </ul>
-            </div>
-            <div class="flex space-x-4">
-                <a href="https://www.instagram.com/fototreff_dresden/" class="hover:text-white text-3xl">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://discord.gg/PG3jDR7Kh7" class="hover:text-white text-3xl">
-                    <i class="fab fa-discord"></i>
-                </a>
-                <a href="https://www.reddit.com/r/dresden/comments/1c0e5ii/gemeinsam_fotografieren_fototreff_dresden/" class="hover:text-white text-3xl">
-                    <i class="fab fa-reddit"></i>
-                </a>
             </div>
         </div>
     </footer>

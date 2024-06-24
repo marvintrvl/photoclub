@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="mt-12 mb-8 bg-fgreen-800 rounded-lg max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 border-gray-200">
                 <h1 class="text-3xl font-bold mb-4">Profil bearbeiten</h1>
@@ -18,7 +18,7 @@
                             </div>
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
-                        <input type="text" name="full_name" id="id_full_name" value="{{ user.full_name }}" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                        <input type="text" name="full_name" id="id_full_name" value="{{ user.full_name }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
                     </div>
                     <div class="mb-4">
                         <label for="id_email" class="block text-lg font-medium text-gray-50">E-Mail Adresse</label>
@@ -28,7 +28,7 @@
                             </div>
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
-                        <input type="email" name="email" id="id_email" value="{{ user.email }}" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                        <input type="email" name="email" id="id_email" value="{{ user.email }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
                     </div>
                     <div class="mb-4">
                         <label for="id_equipment" class="block text-lg font-medium text-gray-50">Ausrüstung</label>
@@ -38,7 +38,7 @@
                             </div>
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
-                        <textarea name="equipment" id="id_equipment" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.equipment }}</textarea>
+                        <textarea name="equipment" id="id_equipment" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.equipment }}</textarea>
                     </div>
                     <div class="mb-4">
                         <label for="id_interests" class="block text-lg font-medium text-gray-50">Interessen</label>
@@ -48,7 +48,7 @@
                             </div>
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
-                        <textarea name="interests" id="id_interests" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.interests }}</textarea>
+                        <textarea name="interests" id="id_interests" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.interests }}</textarea>
                     </div>
                     <div class="mb-4">
                         <label for="id_description" class="block text-lg font-medium text-gray-50">Beschreibung</label>
@@ -58,7 +58,7 @@
                             </div>
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
-                        <textarea name="description" id="id_description" class="text-gray-700 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.description }}</textarea>
+                        <textarea name="description" id="id_description" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.description }}</textarea>
                     </div>
                     <div class="mb-4">
                         <label for="id_picture" class="mb-2 block text-lg font-medium text-gray-50">Profilbild</label>
@@ -68,12 +68,12 @@
                             {% else %}
                                 <div class="w-16 h-16 rounded-full bg-gray-300 mr-4"></div>
                             {% endif %}
-                            <input type="file" name="picture" id="id_picture" accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                            <input type="file" name="picture" id="id_picture" accept="image/*" class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                             <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                         </div>
                     </div>
-                    <div class="mt-6">
-                        <button type="submit" class="bg-forange gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">Speichern</button>
+                    <div class="mt-6 text-fgray-900">
+                        <button type="submit" class="bg-forange-300 gray-800 text-fgray-950 px-4 py-2 rounded-md hover:bg-gray-700">Speichern</button>
                     </div>
                 </form>
             </div>

@@ -4,4 +4,4 @@ from .models import Meetup
 class MeetupForm(forms.ModelForm):
     class Meta:
         model = Meetup
-        fields = ['title', 'description', 'date']
+        fields = ['title', 'short_description', 'detailed_description', 'date', 'location', 'topic']

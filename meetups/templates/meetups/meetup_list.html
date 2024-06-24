@@ -1,0 +1,24 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-4xl">
+    <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h1 class="text-2xl font-bold mb-4 text-center">List of Meetups</h1>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+            {% for meetup in meetups %}
+            <div class="bg-gray-800 p-4 flex flex-col items-center">
+                <h2 class="text-white text-lg font-bold">{{ meetup.title }}</h2>
+                <p class="text-gray-400">{{ meetup.date }}</p>
+                
+                <!-- Add a link to view meetup details -->
+                <a href="{% url 'meetups:meetup_detail' meetup.pk %}" class="text-blue-500 hover:text-blue-700">View Details</a>
+            </div>
+            {% empty %}
+            <div>No meetups found.</div>
+            {% endfor %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

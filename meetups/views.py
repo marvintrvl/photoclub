@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Meetup
+from .models import Meetup, MeetupImage
 from .forms import MeetupForm
 
 def meetup_list(request):
@@ -9,7 +9,8 @@ def meetup_list(request):
 
 def meetup_detail(request, pk):
     meetup = get_object_or_404(Meetup, pk=pk)
-    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup})
+    images = MeetupImage.objects.filter(meetup=meetup)
+    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup, 'images': images})
 
 @login_required
 def meetup_edit(request, pk=None):

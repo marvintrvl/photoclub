@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-4xl">
+    <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h1 class="text-2xl font-bold mb-4 text-center">{{ meetup.title }}</h1>
+        
+        <div class="flex justify-center items-center mb-4">
+            <img src="{% static 'path_to_your_meetup_image.jpg' %}" alt="{{ meetup.title }}" class="w-64 h-64 object-cover rounded-md">
+        </div>
+
+        <p class="text-white text-lg">{{ meetup.detailed_description }}</p>
+        <p class="text-gray-400">Date: {{ meetup.date }}</p>
+        <p class="text-gray-400">Location: {{ meetup.location }}</p>
+        <p class="text-gray-400">Topic: {{ meetup.topic }}</p>
+
+        <!-- Assuming you have images related to the meetup -->
+        {% for image in meetup.images.all %}
+        <div class="flex justify-center items-center mt-4">
+            <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="w-64 h-64 object-cover rounded-md">
+        </div>
+        {% empty %}
+        <p>No images available for this meetup.</p>
+        {% endfor %}
+        
+    </div>
+</div>
+{% endblock %}
