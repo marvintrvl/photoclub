@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-4xl">
+<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-full max-w-3/4">
     <div class="shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold mb-4">{{ member.full_name }}</h1>
         <img src="{{ member.picture.url }}" alt="{{ profile.full_name }}" class="w-48 h-48 object-fit rounded-sm mb-4">
@@ -21,8 +21,22 @@
             <p>{{ member.description }}</p>
         </div>
         
-        <!-- Add more sections as needed, such as profile picture, gallery, etc. -->
-        
+        <!-- Categories and Photos -->
+        <div class="mt-8">
+            <h2 class="text-lg font-bold mb-4">Meine Kategorien</h2>
+            {% for category in member.categories.all %}
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">{{ category.name }}</h3>
+                    <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
+                        {% for photo in category.photos.all %}
+                            <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
+                        {% empty %}
+                            <p class="text-gray-400">Es wurden noch keine Bilder in dieser Kategorie hochgeladen.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}

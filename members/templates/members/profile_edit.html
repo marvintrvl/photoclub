@@ -79,15 +79,52 @@
                     </div>
                 </form>
             </div>
-            {% if user.is_staff %}
+            
             <div class="bg-fgreen-800 p-4 rounded-lg">
-                <h2 class="text-3xl font-bold mb-4 text-white">Admin Panel</h2>
-                <ul class="text-fgray-950">
-                    <li><a href="{% url 'meetup_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Alle Treffen verwalten</a></li>
-                    <!-- Add more admin links as needed -->
-                </ul>
+                {% if user.is_staff %}
+                    <h2 class="text-3xl font-bold mb-4 text-white">Admin Panel</h2>
+                    <ul class="text-fgray-950">
+                        <li><a href="{% url 'meetup_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Alle Treffen verwalten</a></li>
+                        <!-- Add more admin links as needed -->
+                    </ul>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <!-- Add category form -->
+                    <h2 class="text-lg font-bold mb-2">Neue Kategorie hinzufügen</h2>
+                    <form method="post" action="{% url 'members:add_category' %}">
+                        {% csrf_token %}
+                        {{ form.name }}
+                        <button type="submit" class="text-fgray-50 bg-forange-300 py-1 px-2 rounded-lg">Kategorie hinzufügen</button>
+                    </form>
+            
+                    <!-- Add photo form -->
+                    <h2 class="text-lg font-bold mb-2 mt-4">Neues Foto hinzufügen</h2>
+                    <form method="post" action="{% url 'members:add_photo' %}" enctype="multipart/form-data" class="text-fgray-950">
+                        {% csrf_token %}
+                        {{ form.category }}
+                        {{ form.image }}
+                        <button type="submit" class="text-fgray-50 bg-forange-300 py-1 px-2 rounded-lg">Foto hinzufügen</button>
+                    </form>
+                    
+                    <!-- Display user's categories and photos -->
+                    <h2 class="text-lg font-bold mb-2 mt-4">Meine Kategorien</h2>
+                    {% for category in user.categories.all %}
+                        <h3 class="text-lg font-bold mt-2">{{ category.name }}</h3>
+                        <div class="mt-4 columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
+                            {% for photo in category.photos.all %}
+                                <div class="first:mt-0 relative mt-4">
+                                    <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="rounded-lg">
+                                    
+                                    <form method="post" action="{% url 'members:delete_photo' photo.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="py-1 px-2 bg-forange-300 absolute top-2 right-2 bg-red-500 text-white rounded-full p-1">Löschen</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 </div>

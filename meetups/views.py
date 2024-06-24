@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Meetup, MeetupImage
-from .forms import MeetupForm
+from .models import Meetup, MeetupImage, MeetupImage
+from .forms import MeetupForm, MeetupImageForm
+from django.http import HttpResponseForbidden
 
 def meetup_list(request):
     meetups = Meetup.objects.all().order_by('date')
@@ -9,9 +10,41 @@ def meetup_list(request):
 
 def meetup_detail(request, pk):
     meetup = get_object_or_404(Meetup, pk=pk)
-    images = MeetupImage.objects.filter(meetup=meetup)
-    form = MeetupForm(instance=meetup)
-    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup, 'images': images, 'form': form})
+    if request.method == 'POST':
+        form = MeetupImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            meetup_image = form.save(commit=False)
+            meetup_image.meetup = meetup
+            meetup_image.user = request.user
+            meetup_image.save()
+            return redirect('meetup_detail', pk=meetup.id)
+    else:
+        form = MeetupImageForm()
+    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup, 'form': form})
+
+@login_required
+def delete_meetup_image(request, meetup_id, image_id):
+    meetup = get_object_or_404(Meetup, id=meetup_id)
+    image = get_object_or_404(MeetupImage, id=image_id)
+    if image.user != request.user:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        image.delete()
+        return redirect('meetup_detail', pk=meetup.id)
+    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup})
+
+@login_required
+def add_meetup_image(request, meetup_id):
+    meetup = get_object_or_404(Meetup, id=meetup_id)
+    if request.method == 'POST':
+        form = MeetupImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.meetup = meetup
+            image.user = request.user
+            image.save()
+            return redirect('meetup_detail', pk=meetup.id)
+    return redirect('meetup_detail', pk=meetup.id)
 
 @login_required
 def meetup_list_private(request):

@@ -14,17 +14,34 @@
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Ort: </span> {{ meetup.location }}</p>
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Thema: </span> {{ meetup.topic }}</p>
 
-        <!-- Assuming you have images related to the meetup -->
         <div class="mt-8">
             <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
-            {% for image in meetup.images.all %}        
-                <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="">        
+            {% for image in meetup.images.all %}
+                <div class="first:mt-0 relative mt-4">
+                    <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="w-full h-auto object-cover rounded-md">
+                    {% if user.is_authenticated and image.user == user %}
+                        <form method="post" action="{% url 'meetup_image_delete' meetup.id image.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="py-1 px-2 bg-forange-300 absolute top-2 right-2 bg-red-500 text-white rounded-full p-1">Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
             {% empty %}
+                <p class="text-gray-400 mt-4">Es wurden noch keine Bilder von diesen Treffen hochgeladen.</p>
+            {% endfor %}
             </div>
         </div>
-        <p class="text-gray-400 mt-4">Es wurden noch keine Bilder von diesen Treffen hochgeladen.</p>
-        {% endfor %}
-        
+
+        {% if user.is_authenticated %}
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Bild hochladen</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg py-1 px-2 bg-forange-300 ">Hochladen</button>
+            </form>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

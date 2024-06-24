@@ -1,5 +1,5 @@
 from django import forms
-from .models import Meetup
+from .models import Meetup, MeetupImage
 
 class MeetupForm(forms.ModelForm):
     class Meta:
@@ -18,3 +18,8 @@ class MeetupForm(forms.ModelForm):
             'location': 'Ort',
             'topic': 'Thema',
         }
+
+class MeetupImageForm(forms.ModelForm):
+    class Meta:
+        model = MeetupImage
+        fields = ['image']

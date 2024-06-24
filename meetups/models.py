@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from members.models import CustomUser
 
 def default_meetup_time():
     return timezone.now().time()
@@ -18,10 +19,10 @@ class Meetup(models.Model):
     def __str__(self):
         return self.title
 
-
 class MeetupImage(models.Model):
     meetup = models.ForeignKey(Meetup, related_name='images', on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, related_name='meetup_images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='meetup_images/')
 
     def __str__(self):
-        return f'Image for {self.meetup.title}'
+        return f'Image for {self.meetup.title} by {self.user.username}'

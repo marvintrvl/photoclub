@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser
-from .forms import ProfileForm, LoginForm
+from .models import CustomUser, PhotoCategory, UserPhoto
+from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm
 from django.contrib.auth import authenticate, login, logout
 
 @login_required
@@ -44,3 +44,35 @@ def logout_view(request):
 def member_detail(request, username):
     member = get_object_or_404(CustomUser, username=username)
     return render(request, 'members/member_detail.html', {'member': member})
+
+@login_required
+def add_category(request):
+    if request.method == 'POST':
+        form = PhotoCategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
+            return redirect('members:profile_edit')
+    else:
+        form = PhotoCategoryForm()
+    return render(request, 'members/profile_edit.html', {'form': form})
+
+@login_required
+def add_photo(request):
+    if request.method == 'POST':
+        form = UserPhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            photo = form.save(commit=False)
+            photo.user = request.user
+            photo.save()
+            return redirect('members:profile_edit')
+    else:
+        form = UserPhotoForm()
+    return render(request, 'members/profile_edit.html', {'form': form})
+
+@login_required
+def delete_photo(request, pk):
+    photo = get_object_or_404(UserPhoto, pk=pk, user=request.user)
+    photo.delete()
+    return redirect('members:profile_edit')
