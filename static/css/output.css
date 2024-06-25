@@ -806,8 +806,16 @@ video {
   width: 100%;
 }
 
+.w-screen {
+  width: 100vw;
+}
+
 .min-w-1\/2 {
   min-width: 50%;
+}
+
+.min-w-3\/4 {
+  min-width: 75%;
 }
 
 .max-w-3\/4 {
@@ -1305,6 +1313,10 @@ video {
 
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .md\:justify-center {
+    justify-content: center;
   }
 
   .md\:bg-forange-300 {

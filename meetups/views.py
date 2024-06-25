@@ -3,10 +3,16 @@ from django.contrib.auth.decorators import login_required
 from .models import Meetup, MeetupImage, MeetupImage
 from .forms import MeetupForm, MeetupImageForm
 from django.http import HttpResponseForbidden
+from django.utils import timezone
 
 def meetup_list(request):
-    meetups = Meetup.objects.all().order_by('date')
-    return render(request, 'meetups/meetup_list.html', {'meetups': meetups})
+    today = timezone.now().date()
+    upcoming_meetups = Meetup.objects.filter(date__gte=today).order_by('date')
+    past_meetups = Meetup.objects.filter(date__lt=today).order_by('-date')
+    return render(request, 'meetups/meetup_list.html', {
+        'upcoming_meetups': upcoming_meetups,
+        'past_meetups': past_meetups
+    })
 
 def meetup_detail(request, pk):
     meetup = get_object_or_404(Meetup, pk=pk)

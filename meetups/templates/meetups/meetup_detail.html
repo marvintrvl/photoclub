@@ -31,6 +31,10 @@
             {% endfor %}
             </div>
         </div>
+        
+        <div class="flex justify-end items-center mt-4">
+            <a href="{% url 'meetup_list' %}" class="py-1 px-2 bg-forange-300 rounded-lg">Zurück zur Übersicht</a>
+        </div>
 
         {% if user.is_authenticated %}
         <div class="mt-8">
