@@ -38,10 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'challenges',
     'members',
     'meetups',
-    'editing',
+    'photo_challenge',
+    'editing_challenge',
     'widget_tweaks',
 ]
 

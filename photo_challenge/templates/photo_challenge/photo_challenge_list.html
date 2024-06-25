@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<h1>Photo Challenges</h1>
+<ul>
+    {% for challenge in object_list %}
+    <li>
+        <a href="{% url 'photo_challenge_detail' challenge.pk %}">{{ challenge.name }}</a>
+        <p>{{ challenge.details }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

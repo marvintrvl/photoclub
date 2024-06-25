@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<h1>Create/Edit Editing Challenge</h1>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+
+{% if object.raw_file %}
+  <h2>Current RAW File:</h2>
+  <p><a href="{{ object.raw_file.url }}">Download RAW File</a></p>
+{% endif %}
+{% endblock %}

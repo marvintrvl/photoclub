@@ -1,0 +1,63 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<h1>{{ object.name }}</h1>
+<p>{{ object.details }}</p>
+
+<h2>Submissions</h2>
+<ul>
+    {% for submission in object.submissions.all %}
+    <li>
+        <img src="{{ submission.image.url }}" alt="Submission by {{ submission.user.username }}">
+        <p>{{ submission.description }}</p>
+        <p>Submitted by {{ submission.user.username }} at {{ submission.submitted_at }}</p>
+        <form method="post" action="{% url 'vote_submission' submission.id %}">
+            {% csrf_token %}
+            <button type="submit" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>Vote</button>
+        </form>
+        <p>Votes: {{ submission.votes.count }}</p>
+        {% if submission.is_winner %}
+        <p>Winner!</p>
+        {% endif %}
+        <div>
+            <h3>Comments</h3>
+            <ul>
+                {% for comment in submission.comments.filter(parent__isnull=True) %}
+                <li>
+                    <p>{{ comment.text }}</p>
+                    <p>By {{ comment.user.username }} at {{ comment.created_at }}</p>
+                    <ul>
+                        {% for reply in comment.replies.all %}
+                        <li>
+                            <p>{{ reply.text }}</p>
+                            <p>By {{ reply.user.username }} at {{ reply.created_at }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <form method="post" action="{% url 'add_comment' submission.id %}">
+                        {% csrf_token %}
+                        {{ comment_form.as_p }}
+                        <input type="hidden" name="parent" value="{{ comment.id }}">
+                        <button type="submit">Reply</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            <form method="post" action="{% url 'add_comment' submission.id %}">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit">Add Comment</button>
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+<h2>Submit your photo</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ submission_form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endif %}
+{% endblock %}
