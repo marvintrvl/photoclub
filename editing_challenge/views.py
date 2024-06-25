@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.db import models
 from datetime import timedelta
 from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 
 class EditingChallengeListView(ListView):
     model = EditingChallenge
@@ -33,6 +34,7 @@ class EditingChallengeDetailView(DetailView):
         context['submission_form'] = EditingSubmissionForm()
         context['comment_form'] = CommentForm()
         context['submissions_with_comments'] = submissions_with_comments
+        context['can_vote'] = challenge.end_date < timezone.now().date() <= challenge.voting_period_end
 
         return context
 
@@ -58,13 +60,19 @@ class EditingSubmissionCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
+        existing_submission = EditingChallengeSubmission.objects.filter(user=self.request.user, challenge=form.instance.challenge).first()
+        if existing_submission:
+            existing_submission.delete()
         return super().form_valid(form)
 
 def vote_submission(request, submission_id):
     submission = get_object_or_404(EditingChallengeSubmission, id=submission_id)
+    if not submission.challenge.voting_period_end >= timezone.now().date() > submission.challenge.end_date:
+        raise PermissionDenied("Voting is not allowed outside the voting period.")
+    
     if EditingChallengeVote.can_vote(request.user, submission):
         EditingChallengeVote.objects.create(submission=submission, user=request.user)
-    return redirect('editing_challenge_detail', pk=submission.challenge.id)
+    return redirect('editing_challenge:editing_challenge_detail', pk=submission.challenge.id)
 
 def add_comment(request, submission_id):
     if request.method == 'POST':
@@ -75,7 +83,7 @@ def add_comment(request, submission_id):
             comment.user = request.user
             comment.submission = submission
             comment.save()
-    return redirect('editing_challenge_detail', pk=submission.challenge.id)
+    return redirect('editing_challenge:editing_challenge_detail', pk=submission.challenge.id)
 
 def determine_winner():
     now = timezone.now().date()
