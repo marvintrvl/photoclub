@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CustomUser, PhotoCategory, UserPhoto
 from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseForbidden
 
 @login_required
 def profile_edit(request):
@@ -61,14 +62,23 @@ def add_category(request):
 @login_required
 def add_photo(request):
     if request.method == 'POST':
-        form = UserPhotoForm(request.POST, request.FILES)
+        form = UserPhotoForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             photo = form.save(commit=False)
             photo.user = request.user
+            
+            # Check if the category belongs to the current user
+            if photo.category.user != request.user:
+                return HttpResponseForbidden("You can't add photos to categories that don't belong to you.")
+            
             photo.save()
             return redirect('members:profile_edit')
     else:
-        form = UserPhotoForm()
+        form = UserPhotoForm(user=request.user)
+    
+    # Limit category choices to the current user's categories
+    form.fields['category'].queryset = PhotoCategory.objects.filter(user=request.user)
+    
     return render(request, 'members/profile_edit.html', {'form': form})
 
 @login_required

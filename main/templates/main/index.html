@@ -4,12 +4,12 @@
     <div class="hero">
         <img src="static/images/hero1.jpg" alt="Hero Image" class="w-full h-auto object-cover">
     </div>
-    <div class="bg-fblue text-fgray pt-12 pb-16">
-        <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div class="bg-fblue-950 text-fgray-50 pt-12 pb-16">
+        <h2 class="mx-24 text-3xl font-normal text-white uppercase">Herzlich Willkommen</h2>
+        <div class="pb-12 mx-24 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
             <div>
-                <h2 class="text-3xl font-normal text-white uppercase">Herzlich Willkommen</h2>
                 
-                <p class="text-white font-light mt-8">
+                <p class="text-white font-light">
                     Herzlich willkommen in unserer Fototreff-Gruppe Dresden!
                     Wir freuen uns sehr, dich in unserer Gemeinschaft von Hobbyfotografen begrüßen zu dürfen. Bei
                     unseren regelmäßigen Treffen haben wir die Gelegenheit, gemeinsam auf Fototour zu gehen, uns
@@ -25,27 +25,22 @@
                 </p>
             </div>
             <div>
-                <h2 class="text-3xl font-normal text-white uppercase">Tritt unserem Verein bei</h2>
-                <p class="text-white font-light mt-8">Du bist herzlich eingeladen, Mitglied zu werden. Wir freuen uns über jedes neue Gesicht. Als Mitglied kannst du an unseren Foto-Challenges teilnehmen und an unseren Fotowalks teilnehmen.</p>
-                <h3 class="text-2xl font-normal text-white uppercase mt-8">Unsere neuesten Mitglieder:</h3>
-                <div class="flex justify-start items-center gap-4 mt-8">
-                    {% for user in newest_users %}
-                        <div class="text-center">
-                            {% if user.picture %}
-                                <img src="{{ user.picture.url }}" alt="{{ user.full_name }}" class="w-24 h-24 rounded-full mx-auto">
-                            {% else %}
-                                <img src="static/images/default_profile.png" alt="Default Profile Picture" class="w-24 h-24 rounded-full mx-auto">
-                            {% endif %}
-                            <p class="text-white mt-2">{{ user.full_name }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="mt-8">
-                    <a href="https://discord.gg/PG3jDR7Kh7" class="bg-forange-300 py-2 px-4 rounded-lg hover:text-white font-light">Tritt unserem Discrod Server bei</a>
-                </div>
+                <!-- Display the upcoming meetup details here -->
+                {% if upcoming_meetup %}
+                    <h2 class="text-3xl font-light text-white uppercase">Unser nächster Fototreff</h2>
+                    <p class="text-white font-light mt-8">
+                        <strong class ="uppercase">Wann:</strong> {{ upcoming_meetup.date }}, {{ upcoming_meetup.time }} <br>
+                        <strong class="uppercase">Wo:</strong> {{ upcoming_meetup.location }} <br>
+                        <strong class="uppercase">Thema:</strong> {{ upcoming_meetup.topic }} <br>
+                        <br>
+                        <strong>Kurzbeschreibung:</strong> {{ upcoming_meetup.short_description }} <br>
+                    </p>
+                {% else %}
+                    <h2 class="text-3xl font-normal text-white uppercase">Kein bevorstehendes Treffen</h2>
+                    <p class="text-white font-light mt-8">Es gibt derzeit keine geplanten Treffen. Schau später noch einmal vorbei!</p>
+                {% endif %}
             </div>
         </div>
-    </div>
 
     <div class="bg-fgreen-600 text-fgray pt-12">
         <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -81,6 +76,29 @@
                             <p class="text-white mt-2">{{ user.full_name }}</p>
                         </div>
                     {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="bg-fblue-950 pt-12">
+            <h3 class="mx-24 text-2xl font-normal text-white uppercase">Unsere neuesten Mitglieder:</h3>
+            <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <div class="flex justify-start items-center gap-8 mt-8">
+                        {% for user in newest_users %}
+                            <div class="text-center">
+                                {% if user.picture %}
+                                    <img src="{{ user.picture.url }}" alt="{{ user.full_name }}" class="w-24 h-24 rounded-full mx-auto">
+                                {% else %}
+                                    <img src="static/images/default_profile.png" alt="Default Profile Picture" class="w-24 h-24 rounded-full mx-auto">
+                                {% endif %}
+                                <p class="text-white mt-2">{{ user.full_name }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="mt-8 pb-12 flex justify-center items-center">
+                    <a href="https://discord.gg/PG3jDR7Kh7" class="bg-forange-300 py-2 px-4 rounded-lg hover:text-white font-light">Tritt unserem Discord Server bei</a>
                 </div>
             </div>
         </div>
