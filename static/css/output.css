@@ -632,8 +632,8 @@ video {
   top: 0.5rem;
 }
 
-.left-12 {
-  left: 3rem;
+.bottom-0 {
+  bottom: 0px;
 }
 
 .z-10 {
@@ -660,6 +660,10 @@ video {
 
 .-mt-6 {
   margin-top: -1.5rem;
+}
+
+.-mt-8 {
+  margin-top: -2rem;
 }
 
 .mb-2 {
@@ -698,6 +702,10 @@ video {
   margin-right: 0.5rem;
 }
 
+.mr-3 {
+  margin-right: 0.75rem;
+}
+
 .mr-4 {
   margin-right: 1rem;
 }
@@ -724,10 +732,6 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.mr-3 {
-  margin-right: 0.75rem;
 }
 
 .block {
@@ -770,8 +774,8 @@ video {
   height: 16rem;
 }
 
-.h-80 {
-  height: 20rem;
+.h-8 {
+  height: 2rem;
 }
 
 .h-auto {
@@ -780,10 +784,6 @@ video {
 
 .h-full {
   height: 100%;
-}
-
-.h-8 {
-  height: 2rem;
 }
 
 .min-h-screen {
@@ -822,20 +822,16 @@ video {
   width: 16rem;
 }
 
-.w-80 {
-  width: 20rem;
+.w-8 {
+  width: 2rem;
+}
+
+.w-96 {
+  width: 24rem;
 }
 
 .w-full {
   width: 100%;
-}
-
-.w-screen {
-  width: 100vw;
-}
-
-.w-8 {
-  width: 2rem;
 }
 
 .min-w-1\/2 {
@@ -1034,10 +1030,6 @@ video {
   background-color: rgb(229 176 131 / var(--tw-bg-opacity));
 }
 
-.bg-opacity-50 {
-  --tw-bg-opacity: 0.5;
-}
-
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -1097,6 +1089,11 @@ video {
 .py-6 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .pb-12 {
@@ -1309,6 +1306,10 @@ video {
 @media (min-width: 640px) {
   .sm\:mt-0 {
     margin-top: 0px;
+  }
+
+  .sm\:inline {
+    display: inline;
   }
 
   .sm\:w-1\/2 {

@@ -17,18 +17,21 @@ class EditingChallengeForm(forms.ModelForm):
 class EditingSubmissionForm(forms.ModelForm):
     class Meta:
         model = EditingChallengeSubmission
-        fields = ['edited_image', 'description']
+        fields = ['edited_image']
         labels = {
             'edited_image': 'Bearbeitetes Bild',
-            'description': 'Beschreibung',
         }
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        self.challenge = kwargs.pop('challenge', None)
+        super().__init__(*args, **kwargs)
+
     def clean_edited_image(self):
-        user = self.instance.user
-        challenge = self.instance.challenge
-        if EditingChallengeSubmission.objects.filter(user=user, challenge=challenge).exists():
+        if EditingChallengeSubmission.objects.filter(user=self.user, challenge=self.challenge).exists():
             raise forms.ValidationError("Du kannst nur 1 bearbeitetes Foto pro Challenge hochladen.")
         return self.cleaned_data.get('edited_image')
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

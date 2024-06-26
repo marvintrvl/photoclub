@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from members.models import CustomUser
+from django.contrib import messages
 
 class EditingChallengeListView(ListView):
     model = EditingChallenge
@@ -69,15 +70,32 @@ class EditingChallengeUpdateView(LoginRequiredMixin, UpdateView):
 class EditingSubmissionCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallengeSubmission
     form_class = EditingSubmissionForm
-    template_name = 'editing_challenge/editing_submission_form.html'
+    template_name = 'editing_challenge/editing_challenge_detail.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        kwargs['challenge'] = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
+        return kwargs
+
+    def dispatch(self, request, *args, **kwargs):
+        challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
+        if EditingChallengeSubmission.objects.filter(user=request.user, challenge=challenge).exists():
+            messages.success(request, "Du kannst nur 1 bearbeitetes Foto pro Challenge hochladen.")
+            return redirect('editing_challenge:editing_challenge_detail', pk=self.kwargs['challenge_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        messages.success(self.request, "Es gab ein Problem beim Hochladen deines Fotos. Bitte versuche es erneut.")
+        return super().form_invalid(form)
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
-        existing_submission = EditingChallengeSubmission.objects.filter(user=self.request.user, challenge=form.instance.challenge).first()
-        if existing_submission:
-            existing_submission.delete()
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        messages.success(self.request, "Dein Foto wurde erfolgreich hochgeladen.")
+        return response
+
+    def get_success_url(self):
+        return reverse('editing_challenge:editing_challenge_detail', kwargs={'pk': self.kwargs['challenge_id']})
 
 def vote_submission(request, submission_id):
     submission = get_object_or_404(EditingChallengeSubmission, id=submission_id)

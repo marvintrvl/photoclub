@@ -3,22 +3,36 @@
 {% block content %}
 <div class="bg-fgreen-800 min-w-7/8 rounded-lg mt-12 mb-8 mx-auto">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h1 class="text-3xl font-bold mb-4 text-center">{{ object.name }}</h1>
-        
-        <div class="flex justify-center items-center mb-4">
-            <img src="{{ object.raw_preview.url }}" alt="RAW Preview" class="w-80 h-auto object-cover rounded-md">
+        {% for message in messages %}           
+        <div id="alertBox" class="bg-forange-300 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeAlert()">
+              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+              </svg>
+            </span>
         </div>
+        {% endfor %}
+        <h1 class="text-3xl font-bold mb-8 text-center">{{ object.name }}</h1>
+        
+        <div class="flex flex-col items-center justify-center">
+            <div class="flex justify-center items-center mb-4">
+                <img src="{{ object.raw_preview.url }}" alt="RAW Preview" class="w-96 h-auto object-cover rounded-md">
+            </div>
 
-        <p class="text-white text-lg leading-7 mb-4">{{ object.details }}</p>
-        <a href="{{ object.raw_file.url }}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
+            <p class="text-white text-lg leading-7 mb-4">Regeln: {{ object.details }}</p>
+            <a href="{{ object.raw_file.url }}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
+
+        </div>
 
         <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
         
-        <ul>
+        <ul class="flex flex-col justify-center items-center">
             {% for submission_data in submissions_with_comments %}
             <li class="mb-8">
-                <div class="bg-gray-700 p-4 rounded-lg mb-4">
-                    <div class="mx-auto">
+                <div class="flex justify-center items-center">
+                    <div class="flex flex-col items-start p-4 mb-4" style="max-width: 640px; width: 100%;">
                         <div class="flex items-center mb-4">
                             <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
                             <div>
@@ -26,23 +40,23 @@
                                 <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"F d, Y" }}</p>
                             </div>
                         </div>
-                        <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-80 h-auto object-cover rounded-md mb-4">
-                    </div>
-                    <div class="w-80 mx-auto">
-                        <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="mt-2 py-1 px-2 rounded-lg bg-forange-300 font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
-                                <i class="fas fa-heart"></i> Vote
-                            </button>
-                        </form>
-                        <p class="mt-2">Votes: {{ submission_data.submission.votes.count }}</p>
-                        {% if submission_data.submission.is_winner %}
-                        <p class="text-yellow-400">Gewinner!</p>
-                        {% endif %}
+                        <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
+                        <div class="relative">
+                            <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
+                                    <i class="fas fa-heart"></i> Vote
+                                </button>
+                            </form>
+                            <p class="mt-2">Votes: {{ submission_data.submission.votes.count }}</p>
+                            {% if submission_data.submission.is_winner %}
+                            <p class="text-yellow-400">Gewinner!</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 
-                <div class="bg-gray-700 p-4 rounded-lg">
+                <div class="bg-gray-700 p-4 -mt-8 rounded-lg">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold mb-2">Kommentare</h3>
                         <div class="flex items-center">
@@ -51,7 +65,7 @@
                             <button class="text-xs text-blue-400 ml-2 toggle-comments-button">Kommentare anzeigen</button>
                         </div>
                     </div>
-                    <div class="comments-container h-80 overflow-y-auto mb-4 p-2 bg-gray-800 rounded hidden">
+                    <div class="comments-container h-auto overflow-y-auto mb-4 p-2 bg-gray-800 rounded hidden">
                         {% for comment in submission_data.comments %}
                         <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
                             <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
@@ -78,7 +92,7 @@
                     <form method="post" action="{% url 'editing_challenge:editing_add_comment' submission_data.submission.id %}" class="flex">
                         {% csrf_token %}
                         <input type="hidden" name="parent" id="parent-comment-id">
-                        <input type="text" name="text" placeholder="Type your comment..." class="flex-grow p-2 rounded-l-lg">
+                        <input type="text" name="text" placeholder="Kommentar schreiben..." class="flex-grow p-1 rounded-l-lg">
                         <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Senden</button>
                     </form>
                 </div>
@@ -89,7 +103,7 @@
         {% if user.is_authenticated %}
         <div class="mt-8">
             <h2 class="text-2xl font-bold mb-4">Lade dein bearbeitetes Bild hoch</h2>
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" action="{% url 'editing_challenge:editing_submission_create' object.id %}">
                 {% csrf_token %}
                 {{ submission_form.as_p }}
                 <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Hochladen</button>
@@ -100,6 +114,9 @@
 </div>
 
 <script>
+    function closeAlert() {
+        document.getElementById('alertBox').style.display = 'none';
+    }
 document.addEventListener('DOMContentLoaded', function() {
     const replyButtons = document.querySelectorAll('.reply-button');
     const parentCommentIdInput = document.getElementById('parent-comment-id');
