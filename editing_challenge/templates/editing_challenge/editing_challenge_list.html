@@ -1,35 +1,36 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
+
 <h1 class="text-2xl font-bold mb-4 mt-12 text-center">Editing Challenges</h1>
-<div class="bg-fgreen-600 w-screen text-fgray-50 pt-12 pb-16 mt-12">
+<div class="bg-fgreen-600 text-fgray-50 pt-12 pb-16 mt-12">
     <div class="text-fgray-50 pb-16 mb-8">
-        <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Upcoming Challenges</h2>
+        <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Laufende Editing Challenge</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
-            {% for challenge in object_list %}
+            {% for challenge in upcoming_challenges %}
             <div class="bg-gray-800 p-4 flex flex-col justify-start md:justify-center items-start">
-                <h2 class="text-white text-lg font-bold">{{ challenge.title }}</h2>
-                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Due Date:</strong> {{ challenge.due_date|date:"d M, Y" }}</p>
-                <a href="{% url 'editing_challenge:editing_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
+                <h2 class="text-white text-lg font-bold">{{ challenge.name }}</h2>
+                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Challenge endet am:</strong> {{ challenge.end_date|date:"d M, Y" }}</p>
+                <a href="{% url 'editing_challenge:editing_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Jetzt teilnehmen</a>
             </div>
             {% empty %}
-            <div class="text-white">No upcoming challenges found.</div>
+            <div class="text-white">Es gibt noch keine neue Editing Challenge. Schaue doch später nochmal vorbei.</div>
             {% endfor %}
         </div>
     </div>
 </div>
     <!-- Past Challenges Section -->
     <div class="bg-fblue-950 text-fgray pt-12 pb-16">
-        <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Past Challenges</h2>
+        <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Vergangene Editing Challenges</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
-            {% for challenge in object_list %}
+            {% for challenge in past_challenges %}
             <div class="bg-gray-800 p-4 flex flex-col justify-center items-start">
-                <h2 class="text-white text-lg font-bold">{{ challenge.title }}</h2>
-                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Due Date:</strong> {{ challenge.due_date|date:"d M, Y" }}</p>
-                <a href="{% url 'editing_challenge:editing_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
+                <h2 class="text-white text-lg font-bold">{{ challenge.name }}</h2>
+                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Hat geendet am:</strong> {{ challenge.end_date|date:"d M, Y" }}</p>
+                <a href="{% url 'editing_challenge:editing_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Auswertung</a>
             </div>
             {% empty %}
-            <div class="text-white">No past challenges found.</div>
+            <div class="text-white">Es gibt noch keine beendeten Editing Challenges. Schaue doch später nochmal vorbei.</div>
             {% endfor %}
         </div>
     </div>

@@ -13,6 +13,17 @@ from django.core.exceptions import PermissionDenied
 class EditingChallengeListView(ListView):
     model = EditingChallenge
     template_name = 'editing_challenge/editing_challenge_list.html'
+    context_object_name = 'upcoming_challenges'  # This will be used for upcoming challenges
+
+    def get_queryset(self):
+        # This queryset now specifically fetches upcoming challenges
+        return EditingChallenge.objects.filter(end_date__gte=timezone.now().date()).order_by('end_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add past challenges to the context
+        context['past_challenges'] = EditingChallenge.objects.filter(end_date__lt=timezone.now().date()).order_by('-end_date')
+        return context
 
 class EditingChallengeDetailView(DetailView):
     model = EditingChallenge

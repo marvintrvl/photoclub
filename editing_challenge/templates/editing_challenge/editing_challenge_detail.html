@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto max-w-3/4">
+<div class="bg-fgreen-800 min-w-7/8 rounded-lg mt-12 mb-8 mx-auto">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <!-- Keep the existing challenge details section -->
         <h1 class="text-3xl font-bold mb-4 text-center">{{ object.name }}</h1>
@@ -11,18 +11,17 @@
         </div>
 
         <p class="text-white text-lg leading-7 mb-4">{{ object.details }}</p>
-        <a href="{{ object.raw_file.url }}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">Download RAW File</a>
+        <a href="{{ object.raw_file.url }}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
 
-        <h2 class="text-2xl font-bold mt-8 mb-4">Submissions</h2>
+        <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
         
         <!-- Submissions list -->
         <ul>
             {% for submission_data in submissions_with_comments %}
             <li class="mb-8">
                 <div class="bg-gray-700 p-4 rounded-lg mb-4">
-                    <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-full h-auto object-cover rounded-md mb-4">
-                    <p class="text-white">{{ submission_data.submission.description }}</p>
-                    <p class="text-gray-400">Submitted by {{ submission_data.submission.user.username }} at {{ submission_data.submission.submitted_at }}</p>
+                    <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-80 h-auto mx-auto object-cover rounded-md mb-4">
+                    <p class="text-gray-400">Eingereicht von {{ submission_data.submission.user.username }} am {{ submission_data.submission.submitted_at }}</p>
                     <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
                         {% csrf_token %}
                         <button type="submit" class="mt-2 py-1 px-2 rounded-lg bg-forange-300  font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>Vote</button>
@@ -35,7 +34,7 @@
                 
                 <!-- New chat-style comment section -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold mb-2">Comments</h3>
+                    <h3 class="text-xl font-bold mb-2">Kommentare</h3>
                     <div class="h-80 overflow-y-auto mb-4 p-2 bg-gray-800 rounded">
                         {% for comment in submission_data.comments %}
                         <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
@@ -51,7 +50,7 @@
                                 </div>
                             </div>
                             {% endfor %}
-                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
                         </div>
                         {% endfor %}
                     </div>
@@ -59,7 +58,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="parent" id="parent-comment-id">
                         <input type="text" name="text" placeholder="Type your comment..." class="flex-grow p-2 rounded-l-lg">
-                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Send</button>
+                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Senden</button>
                     </form>
                 </div>
             </li>
@@ -68,11 +67,11 @@
 
         {% if user.is_authenticated %}
         <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Submit your edited photo</h2>
+            <h2 class="text-2xl font-bold mb-4">Lade dein bearbeitetes Bild hoch</h2>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ submission_form.as_p }}
-                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Submit</button>
+                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Hochladen</button>
             </form>
         </div>
         {% endif %}
@@ -90,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             parentCommentIdInput.value = commentId;
             const commentInput = this.closest('.bg-gray-700').querySelector('input[name="text"]');
             commentInput.focus();
-            commentInput.placeholder = 'Reply to comment...';
+            commentInput.placeholder = 'Antworten...';
         });
     });
 });
