@@ -9,6 +9,7 @@ from django.db import models
 from datetime import timedelta
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
+from members.models import CustomUser
 
 class EditingChallengeListView(ListView):
     model = EditingChallenge
@@ -37,9 +38,11 @@ class EditingChallengeDetailView(DetailView):
         # Create a list of submissions with their comments
         submissions_with_comments = []
         for submission in submissions:
+            user_picture = submission.user.picture.url if submission.user.picture else None
             submissions_with_comments.append({
                 'submission': submission,
-                'comments': submission.comments.filter(parent__isnull=True)
+                'comments': submission.comments.filter(parent__isnull=True),
+                'user_picture': user_picture
             })
 
         context['submission_form'] = EditingSubmissionForm()

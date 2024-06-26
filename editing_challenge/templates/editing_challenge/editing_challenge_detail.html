@@ -3,7 +3,6 @@
 {% block content %}
 <div class="bg-fgreen-800 min-w-7/8 rounded-lg mt-12 mb-8 mx-auto">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <!-- Keep the existing challenge details section -->
         <h1 class="text-3xl font-bold mb-4 text-center">{{ object.name }}</h1>
         
         <div class="flex justify-center items-center mb-4">
@@ -15,41 +14,63 @@
 
         <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
         
-        <!-- Submissions list -->
         <ul>
             {% for submission_data in submissions_with_comments %}
             <li class="mb-8">
                 <div class="bg-gray-700 p-4 rounded-lg mb-4">
-                    <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-80 h-auto mx-auto object-cover rounded-md mb-4">
-                    <p class="text-gray-400">Eingereicht von {{ submission_data.submission.user.username }} am {{ submission_data.submission.submitted_at }}</p>
-                    <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="mt-2 py-1 px-2 rounded-lg bg-forange-300  font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>Vote</button>
-                    </form>
-                    <p class="mt-2">Votes: {{ submission_data.submission.votes.count }}</p>
-                    {% if submission_data.submission.is_winner %}
-                    <p class="text-yellow-400">Gewinner!</p>
-                    {% endif %}
+                    <div class="mx-auto">
+                        <div class="flex items-center mb-4">
+                            <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
+                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-80 h-auto object-cover rounded-md mb-4">
+                    </div>
+                    <div class="w-80 mx-auto">
+                        <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="mt-2 py-1 px-2 rounded-lg bg-forange-300 font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
+                                <i class="fas fa-heart"></i> Vote
+                            </button>
+                        </form>
+                        <p class="mt-2">Votes: {{ submission_data.submission.votes.count }}</p>
+                        {% if submission_data.submission.is_winner %}
+                        <p class="text-yellow-400">Gewinner!</p>
+                        {% endif %}
+                    </div>
                 </div>
                 
-                <!-- New chat-style comment section -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold mb-2">Kommentare</h3>
-                    <div class="h-80 overflow-y-auto mb-4 p-2 bg-gray-800 rounded">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold mb-2">Kommentare</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-comments text-blue-400"></i>
+                            <p class="ml-2">{{ submission_data.comments|length }}</p>
+                            <button class="text-xs text-blue-400 ml-2 toggle-comments-button">Kommentare anzeigen</button>
+                        </div>
+                    </div>
+                    <div class="comments-container h-80 overflow-y-auto mb-4 p-2 bg-gray-800 rounded hidden">
                         {% for comment in submission_data.comments %}
                         <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
                             <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
                                 <p class="text-white">{{ comment.text }}</p>
                                 <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"H:i" }}</p>
-                            </div>
-                            {% for reply in comment.replies.all %}
-                            <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
-                                <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
-                                    <p class="text-white">{{ reply.text }}</p>
-                                    <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"H:i" }}</p>
+                                {% if comment.replies.count > 0 %}
+                                <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
+                                <div class="replies-container hidden">
+                                    {% for reply in comment.replies.all %}
+                                    <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
+                                        <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
+                                            <p class="text-white">{{ reply.text }}</p>
+                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"H:i" }}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
                                 </div>
+                                {% endif %}
                             </div>
-                            {% endfor %}
                             <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
                         </div>
                         {% endfor %}
@@ -90,6 +111,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const commentInput = this.closest('.bg-gray-700').querySelector('input[name="text"]');
             commentInput.focus();
             commentInput.placeholder = 'Antworten...';
+        });
+    });
+
+    const toggleCommentsButtons = document.querySelectorAll('.toggle-comments-button');
+    toggleCommentsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const commentsContainer = this.closest('.bg-gray-700').querySelector('.comments-container');
+            commentsContainer.classList.toggle('hidden');
+            this.textContent = commentsContainer.classList.contains('hidden') ? 'Kommentare anzeigen' : 'Kommentare verbergen';
+        });
+    });
+
+    const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-button');
+    toggleRepliesButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const repliesContainer = this.closest('.bg-gray-600').querySelector('.replies-container');
+            repliesContainer.classList.toggle('hidden');
+            this.textContent = repliesContainer.classList.contains('hidden') ? 'Antworten anzeigen' : 'Antworten verbergen';
         });
     });
 });
