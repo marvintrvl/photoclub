@@ -42,13 +42,19 @@
                         </div>
                         <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
                         <div class="relative">
+
                             <form method="post" action="{% url 'editing_challenge:editing_vote_submission' submission_data.submission.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
-                                    <i class="fas fa-heart"></i> Vote
+                                    {% if submission_data.has_voted %}
+                                        <i class="fa-solid fa-heart text-red-500"></i>
+                                    {% else %}
+                                        <i class="fa-regular fa-heart"></i>
+                                    {% endif %}
+                                    {{ submission_data.submission.votes.count }}
                                 </button>
                             </form>
-                            <p class="mt-2">Votes: {{ submission_data.submission.votes.count }}</p>
+                            
                             {% if submission_data.submission.is_winner %}
                             <p class="text-yellow-400">Gewinner!</p>
                             {% endif %}

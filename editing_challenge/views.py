@@ -36,14 +36,16 @@ class EditingChallengeDetailView(DetailView):
         challenge = self.object
         submissions = challenge.submissions.all()
 
-        # Create a list of submissions with their comments
+        # Create a list of submissions with their comments and voting status
         submissions_with_comments = []
         for submission in submissions:
             user_picture = submission.user.picture.url if submission.user.picture else None
+            has_voted = submission.votes.filter(user=self.request.user).exists() if self.request.user.is_authenticated else False
             submissions_with_comments.append({
                 'submission': submission,
                 'comments': submission.comments.filter(parent__isnull=True),
-                'user_picture': user_picture
+                'user_picture': user_picture,
+                'has_voted': has_voted
             })
 
         context['submission_form'] = EditingSubmissionForm()
@@ -52,6 +54,7 @@ class EditingChallengeDetailView(DetailView):
         context['can_vote'] = challenge.end_date < timezone.now().date() <= challenge.voting_period_end
 
         return context
+
 
 class EditingChallengeCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallenge
