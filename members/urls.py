@@ -1,10 +1,15 @@
 from django.urls import path
-from .views import profile_edit, member_list, login_view, logout_view, member_detail, add_category, add_photo, delete_photo, delete_equipment, delete_interest, delete_photo_genre, add_equipment, add_interest, add_photo_genre
+from .views import (
+    profile_edit, member_list, login_view, logout_view, member_detail,
+    add_category, add_photo, delete_photo, delete_equipment, delete_interest,
+    delete_photo_genre, add_equipment, add_interest, add_photo_genre,
+    manage_steckbrief  # Make sure to import the manage_steckbrief view
+)
 
 app_name = 'members'
 
 urlpatterns = [
-    path('members', member_list, name='member_list'),
+    path('members/', member_list, name='member_list'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('profile/', profile_edit, name='profile_edit'),
@@ -17,5 +22,6 @@ urlpatterns = [
     path('profile/add_equipment/', add_equipment, name='add_equipment'),
     path('profile/add_interest/', add_interest, name='add_interest'),
     path('profile/add_photo_genre/', add_photo_genre, name='add_photo_genre'),
+    path('profile/manage_steckbrief/', manage_steckbrief, name='manage_steckbrief'),  # New URL for Steckbrief
     path('members/<str:username>/', member_detail, name='member_detail'),
 ]

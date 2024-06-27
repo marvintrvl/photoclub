@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="bg-fgreen-800 rounded-lg p-4">
                 <h1 class="text-3xl font-bold mb-4 text-fgray-50">Profil bearbeiten</h1>
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" action="{% url 'members:profile_edit' %}">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     <div class="mb-4">
@@ -32,76 +32,7 @@
                         </div>
                         <input type="email" name="email" id="id_email" value="{{ user.email }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
                     </div>
-                    <!-- Equipment section -->
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold mb-2 text-fgray-50">Ausrüstung</h2>
-                        <form method="post" action="{% url 'members:add_equipment' %}">
-                            {% csrf_token %}
-                            {{ equipment_form.category }}
-                            {{ equipment_form.name }}
-                            <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
-                        </form>
-                        <ul class="mt-2">
-                            {% for equipment in user.equipment.all %}
-                                <li class="flex justify-between items-center">
-                                    <span class="text-fgray-50">{{ equipment.get_category_display }}: {{ equipment.name }}</span>
-                                    <form method="post" action="{% url 'members:delete_equipment' equipment.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-fgray-50">Löschen</button>
-                                    </form>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
 
-                    <!-- Interests section -->
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold mb-2 text-fgray-50">Interessen</h2>
-                        <form method="post" action="{% url 'members:add_interest' %}">
-                            {% csrf_token %}
-                            {{ interest_form.name }}
-                            <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
-                        </form>
-                        <ul class="mt-2">
-                            {% for interest in user.interests.all %}
-                                <li class="flex justify-between items-center">
-                                    <span class="text-fgray-50">{{ interest.name }}</span>
-                                    <form method="post" action="{% url 'members:delete_interest' interest.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-fgray-50">Löschen</button>
-                                    </form>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <!-- Photo Genres section -->
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold mb-2 text-fgray-50">Fotografie-Genres</h2>
-                        <form method="post" action="{% url 'members:add_photo_genre' %}">
-                            {% csrf_token %}
-                            {{ photo_genre_form.name }}
-                            <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
-                        </form>
-                        <ul class="mt-2">
-                            {% for genre in user.photo_genres.all %}
-                                <li class="flex justify-between items-center">
-                                    <span class="text-fgray-50">{{ genre.name }}</span>
-                                    <form method="post" action="{% url 'members:delete_photo_genre' genre.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-fgray-50">Löschen</button>
-                                    </form>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <!-- Steckbrief section -->
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold mb-2 text-fgray-50">Steckbrief</h2>
-                        {{ steckbrief_form.as_p }}
-                    </div>
-                    
                     <div class="mb-4">
                         <label for="id_description" class="block text-lg font-medium text-fgray-50">Beschreibung</label>
                         <div class="flex items-center">
@@ -112,6 +43,7 @@
                         </div>
                         <textarea name="description" id="id_description" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ user.description }}</textarea>
                     </div>
+                    
                     <div class="mb-4">
                         <label for="id_picture" class="mb-2 block text-lg font-medium text-fgray-50">Profilbild</label>
                         <div class="flex items-center">
@@ -128,6 +60,81 @@
                         <button type="submit" class="bg-forange-300 text-fgray-50 px-4 py-2 rounded-md hover:bg-gray-700">Speichern</button>
                     </div>
                 </form>
+                
+                <!-- Equipment section -->
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Ausrüstung</h2>
+                    <form method="post" action="{% url 'members:add_equipment' %}">
+                        {% csrf_token %}
+                        {{ equipment_form.category }}
+                        {{ equipment_form.name }}
+                        <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
+                    </form>
+                    <ul class="mt-2">
+                        {% for equipment in user.equipment.all %}
+                            <li class="flex justify-between items-center">
+                                <span class="text-fgray-50">{{ equipment.get_category_display }}: {{ equipment.name }}</span>
+                                <form method="post" action="{% url 'members:delete_equipment' equipment.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-fgray-50">Löschen</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Interests section -->
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Interessen</h2>
+                    <form method="post" action="{% url 'members:add_interest' %}">
+                        {% csrf_token %}
+                        {{ interest_form.name }}
+                        <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
+                    </form>
+                    <ul class="mt-2">
+                        {% for interest in user.interests.all %}
+                            <li class="flex justify-between items-center">
+                                <span class="text-fgray-50">{{ interest.name }}</span>
+                                <form method="post" action="{% url 'members:delete_interest' interest.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-fgray-50">Löschen</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Photo Genres section -->
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Fotografie-Genres</h2>
+                    <form method="post" action="{% url 'members:add_photo_genre' %}">
+                        {% csrf_token %}
+                        {{ photo_genre_form.name }}
+                        <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
+                    </form>
+                    <ul class="mt-2">
+                        {% for genre in user.photo_genres.all %}
+                            <li class="flex justify-between items-center">
+                                <span class="text-fgray-50">{{ genre.name }}</span>
+                                <form method="post" action="{% url 'members:delete_photo_genre' genre.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-fgray-50">Löschen</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Steckbrief section -->
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Steckbrief</h2>
+                    <form method="post" action="{% url 'members:manage_steckbrief' %}">
+                        {% csrf_token %}
+                        {{ steckbrief_form.as_p }}
+                        <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Speichern</button>
+                    </form>
+                </div>
+                
             </div>
             
             <div class="bg-fgreen-800 p-4 rounded-lg">
@@ -141,20 +148,20 @@
                 {% endif %}
                 {% if user.is_authenticated %}
                     <!-- Add category form -->
-                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Neue Kategorie hinzufügen</h2>
+                    <h2 class="text-lg font-bold mb-2">Neue Kategorie hinzufügen</h2>
                     <form method="post" action="{% url 'members:add_category' %}">
                         {% csrf_token %}
                         {{ form.name }}
-                        <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg">Kategorie hinzufügen</button>
+                        <button type="submit" class="text-fgray-50 bg-forange-300 py-1 px-2 rounded-lg">Kategorie hinzufügen</button>
                     </form>
             
                     <!-- Add photo form -->
-                    <h2 class="text-lg font-bold mb-2 mt-4 text-fgray-50">Neues Foto hinzufügen</h2>
-                    <form method="post" action="{% url 'members:add_photo' %}" enctype="multipart/form-data" class="text-fgray-50">
+                    <h2 class="text-lg font-bold mb-2 mt-4">Neues Foto hinzufügen</h2>
+                    <form method="post" action="{% url 'members:add_photo' %}" enctype="multipart/form-data" class="text-fgray-950">
                         {% csrf_token %}
                         {{ form.category }}
                         {{ form.image }}
-                        <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg">Foto hinzufügen</button>
+                        <button type="submit" class="text-fgray-50 bg-forange-300 py-1 px-2 rounded-lg">Foto hinzufügen</button>
                     </form>
                     
                     <!-- Display user's categories and photos -->

@@ -9,50 +9,13 @@ from django.core.exceptions import ObjectDoesNotExist
 @login_required
 def profile_edit(request):
     user = request.user
-    try:
-        steckbrief = user.steckbrief
-    except ObjectDoesNotExist:
-        steckbrief = Steckbrief.objects.create(user=user, image_editing=False, preferred_shooting='alone')
-    
+    form = ProfileForm(instance=user)
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=user)
-        equipment_form = EquipmentForm(request.POST, prefix='equipment')
-        interest_form = InterestForm(request.POST, prefix='interest')
-        photo_genre_form = PhotoGenreForm(request.POST, prefix='photo_genre')
-        steckbrief_form = SteckbriefForm(request.POST, instance=steckbrief)
-
-        if all([form.is_valid(), equipment_form.is_valid(), interest_form.is_valid(), 
-                photo_genre_form.is_valid(), steckbrief_form.is_valid()]):
+        if form.is_valid():
             form.save()
-            if equipment_form.has_changed():
-                equipment = equipment_form.save(commit=False)
-                equipment.user = user
-                equipment.save()
-            if interest_form.has_changed():
-                interest = interest_form.save(commit=False)
-                interest.user = user
-                interest.save()
-            if photo_genre_form.has_changed():
-                photo_genre = photo_genre_form.save(commit=False)
-                photo_genre.user = user
-                photo_genre.save()
-            steckbrief_form.save()
             return redirect('members:profile_edit')
-    else:
-        form = ProfileForm(instance=user)
-        equipment_form = EquipmentForm(prefix='equipment')
-        interest_form = InterestForm(prefix='interest')
-        photo_genre_form = PhotoGenreForm(prefix='photo_genre')
-        steckbrief_form = SteckbriefForm(instance=steckbrief)
-
-    context = {
-        'form': form,
-        'equipment_form': equipment_form,
-        'interest_form': interest_form,
-        'photo_genre_form': photo_genre_form,
-        'steckbrief_form': steckbrief_form,
-        'user': user,
-    }
+    context = {'form': form}
     return render(request, 'members/profile_edit.html', context)
 
 @login_required
@@ -69,6 +32,9 @@ def add_equipment(request):
             equipment = form.save(commit=False)
             equipment.user = request.user
             equipment.save()
+            return redirect('members:profile_edit')
+        else:
+            return render(request, 'members/profile_edit.html', {'equipment_form': form})
     return redirect('members:profile_edit')
 
 @login_required
@@ -85,7 +51,29 @@ def add_interest(request):
             interest = form.save(commit=False)
             interest.user = request.user
             interest.save()
+            return redirect('members:profile_edit')
+        else:
+            return render(request, 'members/profile_edit.html', {'interest_form': form})
     return redirect('members:profile_edit')
+
+@login_required
+def manage_steckbrief(request):
+    user = request.user
+    try:
+        steckbrief = Steckbrief.objects.get(user=user)
+    except Steckbrief.DoesNotExist:
+        steckbrief = Steckbrief(user=user)
+    
+    if request.method == 'POST':
+        form = SteckbriefForm(request.POST, instance=steckbrief)
+        if form.is_valid():
+            form.save()
+            return redirect('members:profile_edit')
+        else:
+            return render(request, 'members/profile_edit.html', {'steckbrief_form': form})
+    else:
+        form = SteckbriefForm(instance=steckbrief)
+        return render(request, 'members/profile_edit.html', {'steckbrief_form': form})
 
 @login_required
 def delete_photo_genre(request, pk):
@@ -101,6 +89,9 @@ def add_photo_genre(request):
             photo_genre = form.save(commit=False)
             photo_genre.user = request.user
             photo_genre.save()
+            return redirect('members:profile_edit')
+        else:
+            return render(request, 'members/profile_edit.html', {'photo_genre_form': form})
     return redirect('members:profile_edit')
 
 def member_list(request):
