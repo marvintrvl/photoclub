@@ -83,11 +83,11 @@
             <div class="bg-fgreen-800 p-4 rounded-lg">
                 {% if user.is_staff %}
                     <h2 class="text-3xl font-bold mb-4 text-white">Admin Panel</h2>
-                    <ul class="text-fgray-950">
-                        <li><a href="{% url 'meetup_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Alle Treffen verwalten</a></li>
-                        <li><a href="{% url 'editing_challenge:editing_challenge_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Editing Challenge bearbeiten</a></li>
-                        <li><a href="{% url 'photo_challenge:photo_challenge_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Photo Challenge bearbeiten</a></li>
-                    </ul>
+                    <div class="text-fgray-50 flex space-x-2 flex-wrap">
+                        <div class="mb-4"><a href="{% url 'meetup_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Alle Treffen verwalten</a></div>
+                        <div class="mb-4"><a href="{% url 'editing_challenge:editing_challenge_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Editing Challenge bearbeiten</a></div>
+                        <div class="mb-4"><a href="{% url 'photo_challenge:photo_challenge_list_private' %}" class="bg-forange-300 py-1 px-2 rounded-lg hover:text-fgray-950">Photo Challenge bearbeiten</a></div>
+                    </div>
                 {% endif %}
                 {% if user.is_authenticated %}
                     <!-- Add category form -->
