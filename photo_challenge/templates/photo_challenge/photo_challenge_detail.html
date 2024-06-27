@@ -1,63 +1,168 @@
 {% extends 'main/base.html' %}
-{% block content %}
-<h1>{{ object.name }}</h1>
-<p>{{ object.details }}</p>
 
-<h2>Submissions</h2>
-<ul>
-    {% for submission in object.submissions.all %}
-    <li>
-        <img src="{{ submission.image.url }}" alt="Submission by {{ submission.user.username }}">
-        <p>{{ submission.description }}</p>
-        <p>Submitted by {{ submission.user.username }} at {{ submission.submitted_at }}</p>
-        <form method="post" action="{% url 'vote_submission' submission.id %}">
-            {% csrf_token %}
-            <button type="submit" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>Vote</button>
-        </form>
-        <p>Votes: {{ submission.votes.count }}</p>
-        {% if submission.is_winner %}
-        <p>Winner!</p>
-        {% endif %}
-        <div>
-            <h3>Comments</h3>
-            <ul>
-                {% for comment in submission.comments.filter(parent__isnull=True) %}
-                <li>
-                    <p>{{ comment.text }}</p>
-                    <p>By {{ comment.user.username }} at {{ comment.created_at }}</p>
-                    <ul>
-                        {% for reply in comment.replies.all %}
-                        <li>
-                            <p>{{ reply.text }}</p>
-                            <p>By {{ reply.user.username }} at {{ reply.created_at }}</p>
-                        </li>
+{% block content %}
+<div class="bg-fgreen-800 min-w-7/8 rounded-lg mt-12 mb-8 mx-auto">
+    <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% for message in messages %}           
+        <div id="alertBox" class="bg-forange-300 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeAlert()">
+              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+              </svg>
+            </span>
+        </div>
+        {% endfor %}
+        <h1 class="text-3xl font-bold mb-8 text-center">{{ object.name }}</h1>
+        
+        <div class="flex flex-col items-center justify-center">
+            <div class="flex justify-center items-center mb-4">
+                <img src="{{ object.image1.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md">
+                {% if object.image2 %}
+                <img src="{{ object.image2.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md mt-4">
+                {% endif %}
+                {% if object.image3 %}
+                <img src="{{ object.image3.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md mt-4">
+                {% endif %}
+            </div>
+
+            <p class="text-white text-lg leading-7 mb-4">{{ object.description }}</p>
+
+        </div>
+
+        <h2 class="text-2xl text-center font-bold mt-8 mb-4">Submissions</h2>
+        
+        <ul class="flex flex-col justify-center items-center">
+            {% for submission_data in submissions_with_comments %}
+            <li class="mb-8">
+                <div class="flex justify-center items-center">
+                    <div class="flex flex-col items-start p-4 mb-4" style="max-width: 640px; width: 100%;">
+                        <div class="flex items-center mb-4">
+                            <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
+                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        <img src="{{ submission_data.submission.image1.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
+                        {% if submission_data.submission.image2 %}
+                        <img src="{{ submission_data.submission.image2.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
+                        {% endif %}
+                        {% if submission_data.submission.image3 %}
+                        <img src="{{ submission_data.submission.image3.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
+                        {% endif %}
+                        <div class="relative">
+                            <form method="post" action="{% url 'photo_challenge:photo_vote_submission' submission_data.submission.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="font-bold" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
+                                    {% if submission_data.has_voted %}
+                                        <i class="fa-solid fa-heart text-red-500"></i>
+                                    {% else %}
+                                        <i class="fa-regular fa-heart"></i>
+                                    {% endif %}
+                                    {{ submission_data.submission.votes.count }}
+                                </button>
+                            </form>
+                            {% if submission_data.submission.is_winner %}
+                            <p class="text-yellow-400">Winner!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-700 p-4 -mt-8 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold mb-2">Comments</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-comments text-blue-400"></i>
+                            <p class="ml-2">{{ submission_data.comments|length }}</p>
+                            <button class="text-xs text-blue-400 ml-2 toggle-comments-button">Show Comments</button>
+                        </div>
+                    </div>
+                    <div class="comments-container h-auto overflow-y-auto mb-4 p-2 bg-gray-800 rounded hidden">
+                        {% for comment in submission_data.comments %}
+                        <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
+                            <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
+                                <p class="text-white">{{ comment.text }}</p>
+                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"H:i" }}</p>
+                                {% if comment.replies.count > 0 %}
+                                <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Show Replies</button>
+                                <div class="replies-container hidden">
+                                    {% for reply in comment.replies.all %}
+                                    <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
+                                        <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
+                                            <p class="text-white">{{ reply.text }}</p>
+                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"H:i" }}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+                        </div>
                         {% endfor %}
-                    </ul>
-                    <form method="post" action="{% url 'add_comment' submission.id %}">
+                    </div>
+                    <form method="post" action="{% url 'photo_challenge:photo_add_comment' submission_data.submission.id %}" class="flex">
                         {% csrf_token %}
-                        {{ comment_form.as_p }}
-                        <input type="hidden" name="parent" value="{{ comment.id }}">
-                        <button type="submit">Reply</button>
+                        <input type="hidden" name="parent" id="parent-comment-id">
+                        <input type="text" name="text" placeholder="Write a comment..." class="flex-grow p-1 rounded-l-lg">
+                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Send</button>
                     </form>
-                </li>
-                {% endfor %}
-            </ul>
-            <form method="post" action="{% url 'add_comment' submission.id %}">
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if user.is_authenticated %}
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Upload Your Photos</h2>
+            <form method="post" enctype="multipart/form-data" action="{% url 'photo_challenge:photo_submission_create' object.id %}">
                 {% csrf_token %}
-                {{ comment_form.as_p }}
-                <button type="submit">Add Comment</button>
+                {{ submission_form.as_p }}
+                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Upload</button>
             </form>
         </div>
-    </li>
-    {% endfor %}
-</ul>
+        {% endif %}
+    </div>
+</div>
 
-{% if user.is_authenticated %}
-<h2>Submit your photo</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ submission_form.as_p }}
-    <button type="submit">Submit</button>
-</form>
-{% endif %}
+<script>
+    function closeAlert() {
+        document.getElementById('alertBox').style.display = 'none';
+    }
+document.addEventListener('DOMContentLoaded', function() {
+    const replyButtons = document.querySelectorAll('.reply-button');
+    const parentCommentIdInput = document.getElementById('parent-comment-id');
+
+    replyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.getAttribute('data-comment-id');
+            parentCommentIdInput.value = commentId;
+            const commentInput = this.closest('.bg-gray-700').querySelector('input[name="text"]');
+            commentInput.focus();
+            commentInput.placeholder = 'Reply...';
+        });
+    });
+
+    const toggleCommentsButtons = document.querySelectorAll('.toggle-comments-button');
+    toggleCommentsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const commentsContainer = this.closest('.bg-gray-700').querySelector('.comments-container');
+            commentsContainer.classList.toggle('hidden');
+            this.textContent = commentsContainer.classList.contains('hidden') ? 'Show Comments' : 'Hide Comments';
+        });
+    });
+
+    const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-button');
+    toggleRepliesButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const repliesContainer = this.closest('.bg-gray-600').querySelector('.replies-container');
+            repliesContainer.classList.toggle('hidden');
+            this.textContent = repliesContainer.classList.contains('hidden') ? 'Show Replies' : 'Hide Replies';
+        });
+    });
+});
+</script>
 {% endblock %}

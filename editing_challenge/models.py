@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+from django.urls import reverse
 
 class EditingChallenge(models.Model):
     name = models.CharField(max_length=200)
@@ -23,6 +24,9 @@ class EditingChallenge(models.Model):
     @property
     def voting_period_end(self):
         return self.end_date + timedelta(days=7)
+    
+    def get_absolute_url(self):
+        return reverse('editing_challenge:editing_challenge_detail', kwargs={'pk': self.pk})
 
 class EditingChallengeSubmission(models.Model):
     challenge = models.ForeignKey(EditingChallenge, related_name='submissions', on_delete=models.CASCADE)

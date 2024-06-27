@@ -7,10 +7,11 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db import models
 from datetime import timedelta
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.exceptions import PermissionDenied
 from members.models import CustomUser
 from django.contrib import messages
+
 
 class EditingChallengeListView(ListView):
     model = EditingChallenge
@@ -59,7 +60,8 @@ class EditingChallengeDetailView(DetailView):
 class EditingChallengeCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallenge
     form_class = EditingChallengeForm
-    template_name = 'editing_challenge/editing_challenge_edit.html'
+    template_name = 'editing_challenge/editing_challenge_create.html'
+    success_url = reverse_lazy('editing_challenge:editing_challenge_list')
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -68,7 +70,7 @@ class EditingChallengeCreateView(LoginRequiredMixin, CreateView):
 class EditingChallengeUpdateView(LoginRequiredMixin, UpdateView):
     model = EditingChallenge
     form_class = EditingChallengeForm
-    template_name = 'editing_challenge/editing_challenge_edit.html'
+    template_name = 'editing_challenge/editing_challenge_create.html'
 
 class EditingSubmissionCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallengeSubmission
@@ -82,20 +84,16 @@ class EditingSubmissionCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
-        challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
-        if EditingChallengeSubmission.objects.filter(user=request.user, challenge=challenge).exists():
-            messages.success(request, "Du kannst nur 1 bearbeitetes Foto pro Challenge hochladen.")
-            return redirect('editing_challenge:editing_challenge_detail', pk=self.kwargs['challenge_id'])
+        self.challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
+        if EditingChallengeSubmission.objects.filter(user=request.user, challenge=self.challenge).exists():
+            messages.error(request, "Du hast bereits ein Foto für diese Challenge hochgeladen.")
+            return redirect('editing_challenge:editing_challenge_detail', pk=self.challenge.id)
         return super().dispatch(request, *args, **kwargs)
-
-    def form_invalid(self, form):
-        messages.success(self.request, "Es gab ein Problem beim Hochladen deines Fotos. Bitte versuche es erneut.")
-        return super().form_invalid(form)
-
+    
     def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, "Dein Foto wurde erfolgreich hochgeladen.")
-        return response
+        form.instance.user = self.request.user
+        form.instance.challenge = get_object_or_404(EditingChallenge, id=self.kwargs['challenge_id'])
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('editing_challenge:editing_challenge_detail', kwargs={'pk': self.kwargs['challenge_id']})

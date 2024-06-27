@@ -13,6 +13,12 @@ class EditingChallengeForm(forms.ModelForm):
             'raw_preview': 'Vorschau',
             'raw_file': 'Rohdatei',
         }
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'raw_preview': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'raw_file': forms.ClearableFileInput(),
+        }
 
 class EditingSubmissionForm(forms.ModelForm):
     class Meta:

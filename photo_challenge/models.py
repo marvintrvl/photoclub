@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 from datetime import timedelta
+from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 class PhotoChallenge(models.Model):
     name = models.CharField(max_length=200)
-    details = models.TextField()
+    description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -22,10 +23,16 @@ class PhotoChallenge(models.Model):
     def voting_period_end(self):
         return self.end_date + timedelta(days=7)
 
+    def get_absolute_url(self):
+        return reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': self.pk})
+
+
 class PhotoChallengeSubmission(models.Model):
     challenge = models.ForeignKey(PhotoChallenge, related_name='submissions', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='challenge_submissions/')
+    image1 = models.ImageField(upload_to='photo_submissions/')
+    image2 = models.ImageField(upload_to='photo_submissions/', blank=True, null=True)
+    image3 = models.ImageField(upload_to='photo_submissions/', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     is_winner = models.BooleanField(default=False)

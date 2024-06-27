@@ -5,7 +5,7 @@
 <div class="mt-12 mb-8 rounded-lg min-w-1/2 mx-auto py-6 sm:px-6 lg:px-8">
     <div class="overflow-hidden shadow-sm sm:rounded-lg">
         <div class="bg-fgreen-800 rounded-lg p-4">
-            <h1 class="text-3xl font-bold mb-4 text-white">Create New Challenge</h1>
+            <h1 class="text-3xl font-bold mb-4 text-white">Create New Photo Challenge</h1>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
@@ -18,12 +18,10 @@
                         </div>
                         <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
                     </div>
-                    {% if field.name == 'raw_preview' or field.name == 'raw_file' %}
-                        {{ field }}
-                    {% elif field.name == 'start_date' or field.name == 'end_date' %}
-                        <input type="date" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|date:'Y-m-d'|default_if_none:'' }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                    {% elif field.widget_type == 'textarea' %}
+                    {% if field.widget_type == 'textarea' %}
                         <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">{{ field.value|default_if_none:"" }}</textarea>
+                    {% elif field.widget_type == 'file' %}
+                        <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                     {% else %}
                         <input type="{{ field.widget_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                     {% endif %}
@@ -33,7 +31,7 @@
                     <button type="submit" class="bg-forange-300 gray-800 text-fgray-950 px-4 py-2 rounded-md hover:bg-gray-700">Create Challenge</button>
                 </div>
             </form>
-            <a href="{% url 'editing_challenge:editing_challenge_list_private' %}" class="inline-block mt-4 text-gray-400 hover:text-gray-200">Back to Challenge Management</a>
+            <a href="{% url 'photo_challenge:photo_challenge_list_private' %}" class="inline-block mt-4 text-gray-400 hover:text-gray-200">Back to Challenge Management</a>
         </div>
     </div>
 </div>
