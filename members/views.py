@@ -1,21 +1,107 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, PhotoCategory, UserPhoto
-from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm
+from .models import CustomUser, PhotoCategory, UserPhoto, Equipment, Interest, PhotoGenre, Steckbrief
+from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm, EquipmentForm, InterestForm, PhotoGenreForm, SteckbriefForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
 def profile_edit(request):
-    user = request.user  # Get the authenticated user
+    user = request.user
+    try:
+        steckbrief = user.steckbrief
+    except ObjectDoesNotExist:
+        steckbrief = Steckbrief.objects.create(user=user, image_editing=False, preferred_shooting='alone')
+    
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
+        equipment_form = EquipmentForm(request.POST, prefix='equipment')
+        interest_form = InterestForm(request.POST, prefix='interest')
+        photo_genre_form = PhotoGenreForm(request.POST, prefix='photo_genre')
+        steckbrief_form = SteckbriefForm(request.POST, instance=steckbrief)
+
+        if all([form.is_valid(), equipment_form.is_valid(), interest_form.is_valid(), 
+                photo_genre_form.is_valid(), steckbrief_form.is_valid()]):
             form.save()
+            if equipment_form.has_changed():
+                equipment = equipment_form.save(commit=False)
+                equipment.user = user
+                equipment.save()
+            if interest_form.has_changed():
+                interest = interest_form.save(commit=False)
+                interest.user = user
+                interest.save()
+            if photo_genre_form.has_changed():
+                photo_genre = photo_genre_form.save(commit=False)
+                photo_genre.user = user
+                photo_genre.save()
+            steckbrief_form.save()
             return redirect('members:profile_edit')
     else:
         form = ProfileForm(instance=user)
-    return render(request, 'members/profile_edit.html', {'form': form, 'user': user})
+        equipment_form = EquipmentForm(prefix='equipment')
+        interest_form = InterestForm(prefix='interest')
+        photo_genre_form = PhotoGenreForm(prefix='photo_genre')
+        steckbrief_form = SteckbriefForm(instance=steckbrief)
+
+    context = {
+        'form': form,
+        'equipment_form': equipment_form,
+        'interest_form': interest_form,
+        'photo_genre_form': photo_genre_form,
+        'steckbrief_form': steckbrief_form,
+        'user': user,
+    }
+    return render(request, 'members/profile_edit.html', context)
+
+@login_required
+def delete_equipment(request, pk):
+    equipment = get_object_or_404(Equipment, pk=pk, user=request.user)
+    equipment.delete()
+    return redirect('members:profile_edit')
+
+@login_required
+def add_equipment(request):
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST)
+        if form.is_valid():
+            equipment = form.save(commit=False)
+            equipment.user = request.user
+            equipment.save()
+    return redirect('members:profile_edit')
+
+@login_required
+def delete_interest(request, pk):
+    interest = get_object_or_404(Interest, pk=pk, user=request.user)
+    interest.delete()
+    return redirect('members:profile_edit')
+
+@login_required
+def add_interest(request):
+    if request.method == 'POST':
+        form = InterestForm(request.POST)
+        if form.is_valid():
+            interest = form.save(commit=False)
+            interest.user = request.user
+            interest.save()
+    return redirect('members:profile_edit')
+
+@login_required
+def delete_photo_genre(request, pk):
+    photo_genre = get_object_or_404(PhotoGenre, pk=pk, user=request.user)
+    photo_genre.delete()
+    return redirect('members:profile_edit')
+
+@login_required
+def add_photo_genre(request):
+    if request.method == 'POST':
+        form = PhotoGenreForm(request.POST)
+        if form.is_valid():
+            photo_genre = form.save(commit=False)
+            photo_genre.user = request.user
+            photo_genre.save()
+    return redirect('members:profile_edit')
 
 def member_list(request):
     profiles = CustomUser.objects.all()
