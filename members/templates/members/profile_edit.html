@@ -64,41 +64,48 @@
                 <!-- Equipment section -->
                 <div class="mb-4">
                     <h2 class="text-lg font-bold mb-2 text-fgray-50">Ausrüstung</h2>
-                    <form method="post" action="{% url 'members:add_equipment' %}">
+                    <form id="add-equipment-form" method="post" action="{% url 'members:add_equipment' %}">
                         {% csrf_token %}
                         {{ equipment_form.category }}
                         {{ equipment_form.name }}
                         <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
                     </form>
-                    <ul class="mt-2">
-                        {% for equipment in user.equipment.all %}
-                            <li class="flex justify-between items-center">
-                                <span class="text-fgray-50">{{ equipment.get_category_display }}: {{ equipment.name }}</span>
-                                <form method="post" action="{% url 'members:delete_equipment' equipment.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-fgray-50">Löschen</button>
-                                </form>
-                            </li>
-                        {% endfor %}
+                    <ul id="equipment-list" class="mt-2">
+                        {% with prev_category='' %}
+                            {% for equipment in user.equipment.all %}
+                                {% if forloop.first or equipment.get_category_display != prev_category %}
+                                    {% if not forloop.first %}</div>{% endif %}
+                                    <div class="mb-2">
+                                    <span class="text-fgray-50">{{ equipment.get_category_display }}:</span>
+                                {% endif %}
+                                <li class="flex justify-between items-center mb-1" id="equipment-{{ equipment.id }}">
+                                    <span class="text-fgray-50">
+                                        <span class="bg-forange-300 px-2 py-1 rounded-md">{{ equipment.name }}</span>
+                                    </span>
+                                    <button class="delete-equipment text-fgray-50 bg-forange-300 px-2 py-1 rounded-md" data-id="{{ equipment.id }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </li>
+                                {% if forloop.last %}</div>{% endif %}
+                                {% with equipment.get_category_display as prev_category %}{% endwith %}
+                            {% endfor %}
+                        {% endwith %}
                     </ul>
                 </div>
 
                 <!-- Interests section -->
                 <div class="mb-4">
                     <h2 class="text-lg font-bold mb-2 text-fgray-50">Interessen</h2>
-                    <form method="post" action="{% url 'members:add_interest' %}">
+                    <form id="add-interest-form" method="post" action="{% url 'members:add_interest' %}">
                         {% csrf_token %}
                         {{ interest_form.name }}
                         <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
                     </form>
-                    <ul class="mt-2">
+                    <ul id="interest-list" class="mt-2">
                         {% for interest in user.interests.all %}
-                            <li class="flex justify-between items-center">
+                            <li class="flex justify-between items-center" id="interest-{{ interest.id }}">
                                 <span class="text-fgray-50">{{ interest.name }}</span>
-                                <form method="post" action="{% url 'members:delete_interest' interest.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-fgray-50">Löschen</button>
-                                </form>
+                                <button class="delete-interest text-fgray-50" data-id="{{ interest.id }}">Löschen</button>
                             </li>
                         {% endfor %}
                     </ul>
@@ -107,19 +114,16 @@
                 <!-- Photo Genres section -->
                 <div class="mb-4">
                     <h2 class="text-lg font-bold mb-2 text-fgray-50">Fotografie-Genres</h2>
-                    <form method="post" action="{% url 'members:add_photo_genre' %}">
+                    <form id="add-photo-genre-form" method="post" action="{% url 'members:add_photo_genre' %}">
                         {% csrf_token %}
                         {{ photo_genre_form.name }}
                         <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Hinzufügen</button>
                     </form>
-                    <ul class="mt-2">
+                    <ul id="photo-genre-list" class="mt-2">
                         {% for genre in user.photo_genres.all %}
-                            <li class="flex justify-between items-center">
+                            <li class="flex justify-between items-center" id="photo-genre-{{ genre.id }}">
                                 <span class="text-fgray-50">{{ genre.name }}</span>
-                                <form method="post" action="{% url 'members:delete_photo_genre' genre.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-fgray-50">Löschen</button>
-                                </form>
+                                <button class="delete-photo-genre text-fgray-50" data-id="{{ genre.id }}">Löschen</button>
                             </li>
                         {% endfor %}
                     </ul>
@@ -128,7 +132,7 @@
                 <!-- Steckbrief section -->
                 <div class="mb-4">
                     <h2 class="text-lg font-bold mb-2 text-fgray-50">Steckbrief</h2>
-                    <form method="post" action="{% url 'members:manage_steckbrief' %}">
+                    <form id="manage-steckbrief-form" method="post" action="{% url 'members:manage_steckbrief' %}">
                         {% csrf_token %}
                         {{ steckbrief_form.as_p }}
                         <button type="submit" class="bg-forange-300 text-fgray-50 px-2 py-1 rounded-md">Speichern</button>
@@ -193,12 +197,151 @@
         $('.edit-icon').on('click', function(e) {
             e.preventDefault();
             var $icon = $(this);
-            var $input = $icon.closest('.mb-4').find('input, textarea'); // Find input or textarea within the same container
-
-            // Toggle visibility of input/textarea and paragraphs
+            var $input = $icon.closest('.mb-4').find('input, textarea');
             $input.toggleClass('hidden');
-            $input.focus(); // Focus on the field for editing
+            $input.focus();
             $icon.parent().find('p').toggleClass('hidden');
+        });
+
+        // Add equipment
+        $('#add-equipment-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                var newEquipment = '<li class="flex justify-between items-center" id="equipment-' + response.id + '">' +
+                    '<span class="text-fgray-50">' +
+                    (response.is_new_category ? response.category + ': ' : '') +
+                    '<span class="bg-forange-300 px-2 py-1 rounded-md">' + response.name + '</span>' +
+                    '</span>' +
+                    '<button class="delete-equipment text-fgray-50" data-id="' + response.id + '">Löschen</button>' +
+                    '</li>';
+                $('#equipment-list').append(newEquipment);
+                $('#id_category').val('');
+                $('#id_name').val('');
+                } else {
+                console.log(response.errors);
+                }
+            }
+            });
+        });
+
+        // Delete equipment
+        $(document).on('click', '.delete-equipment', function() {
+            var equipmentId = $(this).data('id');
+            $.ajax({
+                url: '/profile/delete_equipment/' + equipmentId + '/',
+                type: 'POST',
+                data: { 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val() },
+                success: function(response) {
+                    if (response.success) {
+                        $('#equipment-' + equipmentId).remove();
+                    } else {
+                        console.log(response.error);
+                    }
+                }
+            });
+        });
+        // Add interest
+        $('#add-interest-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        var newInterest = '<li class="flex justify-between items-center" id="interest-' + response.id + '">' +
+                            '<span class="text-fgray-50">' + response.name + '</span>' +
+                            '<button class="delete-interest text-fgray-50" data-id="' + response.id + '">Löschen</button>' +
+                            '</li>';
+                        $('#interest-list').append(newInterest);
+                        $('#id_name').val('');
+                    } else {
+                        console.log(response.errors);
+                    }
+                }
+            });
+        });
+
+        // Delete interest
+        $(document).on('click', '.delete-interest', function() {
+            var interestId = $(this).data('id');
+            $.ajax({
+                url: '/profile/delete_interest/' + interestId + '/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#interest-' + interestId).remove();
+                    } else {
+                        console.log(response.error);
+                    }
+                }
+            });
+        });
+
+        // Add photo genre
+        $('#add-photo-genre-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        var newPhotoGenre = '<li class="flex justify-between items-center" id="photo-genre-' + response.id + '">' +
+                            '<span class="text-fgray-50">' + response.name + '</span>' +
+                            '<button class="delete-photo-genre text-fgray-50" data-id="' + response.id + '">Löschen</button>' +
+                            '</li>';
+                        $('#photo-genre-list').append(newPhotoGenre);
+                        $('#id_name').val('');
+                    } else {
+                        console.log(response.errors);
+                    }
+                }
+            });
+        });
+
+        // Delete photo genre
+        $(document).on('click', '.delete-photo-genre', function() {
+            var photoGenreId = $(this).data('id');
+            $.ajax({
+                url: '/profile/delete_photo_genre/' + photoGenreId + '/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#photo-genre-' + photoGenreId).remove();
+                    } else {
+                        console.log(response.error);
+                    }
+                }
+            });
+        });
+
+        // Manage steckbrief
+        $('#manage-steckbrief-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        alert('Steckbrief updated successfully');
+                    } else {
+                        console.log(response.errors);
+                    }
+                }
+            });
         });
     });
 </script>

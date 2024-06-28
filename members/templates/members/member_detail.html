@@ -1,33 +1,67 @@
 {% extends 'main/base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-<div class="mt-12 mb-8 mx-auto w-full max-w-3/4">
-    <div class="rounded px-8 pt-6 pb-8 mb-4">
+<div class="mt-12 mx-auto mb-8 w-full max-w-3/4">
+    <div class="mx-auto rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold mb-4">{{ member.full_name }}</h1>
-        <img src="{{ member.picture.url }}" alt="{{ profile.full_name }}" class="w-48 h-48 object-fit rounded-sm mb-4">
-        
-        <div class="mb-4">
+        <img src="{{ member.picture.url }}" alt="{{ member.full_name }}" class="w-48 h-48 object-fit rounded-sm mb-4">
+
+        <div class="flex flex-col mb-4">
             <h2 class="text-lg font-bold mb-2">Equipment</h2>
-            <p>{{ member.equipment }}</p>
+            <ul>
+                {% for category, items in grouped_equipment.items %}
+                    <li>
+                        <strong>{{ category|get_display_category }}:</strong>
+                        {{ items|join:", " }}
+                    </li>
+                {% empty %}
+                    <p>No equipment listed.</p>
+                {% endfor %}
+            </ul>
         </div>
-        
+
         <div class="mb-4">
             <h2 class="text-lg font-bold mb-2">Interessen</h2>
-            <p>{{ member.interests }}</p>
+            <ul>
+                {% for interest in interests %}
+                    <li>{{ interest.name }}</li>
+                {% empty %}
+                    <p>No interests listed.</p>
+                {% endfor %}
+            </ul>
         </div>
-        
+
+        <div class="mb-4">
+            <h2 class="text-lg font-bold mb-2">Fotogenres</h2>
+            <ul>
+                {% for genre in photo_genres %}
+                    <li>{{ genre.name }}</li>
+                {% empty %}
+                    <p>No photo genres listed.</p>
+                {% endfor %}
+            </ul>
+        </div>
+
         <div class="mb-4">
             <h2 class="text-lg font-bold mb-2">Über mich</h2>
             <p>{{ member.description }}</p>
         </div>
-        
+
+        <div class="mb-4">
+            <h2 class="text-lg font-bold mb-2">Steckbrief</h2>
+            <p>Image Editing: {{ steckbrief.image_editing|yesno:"Yes,No" }}</p>
+            <p>Preferred Shooting: {{ steckbrief.get_preferred_shooting_display }}</p>
+            <!-- Add more Steckbrief fields as needed -->
+        </div>
+
         <!-- Categories and Photos -->
         <div class="mt-8">
             <h2 class="text-lg font-bold mb-4">Meine Fotos</h2>
             {% for category in member.categories.all %}
                 <div class="mb-6">
                     <h3 class="text-xl font-semibold mb-2">{{ category.name }}</h3>
-                    <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
+                    <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-3 [&>img:not(:first-child)]:mt-8">
                         {% for photo in category.photos.all %}
                             <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
                         {% empty %}

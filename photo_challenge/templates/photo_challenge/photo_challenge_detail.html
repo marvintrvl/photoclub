@@ -15,23 +15,8 @@
         </div>
         {% endfor %}
         <h1 class="text-3xl font-bold mb-8 text-center">{{ object.name }}</h1>
-        
-        <div class="flex flex-col items-center justify-center">
-            <div class="flex justify-center items-center mb-4">
-                <img src="{{ object.image1.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md">
-                {% if object.image2 %}
-                <img src="{{ object.image2.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md mt-4">
-                {% endif %}
-                {% if object.image3 %}
-                <img src="{{ object.image3.url }}" alt="Submission Image" class="w-96 h-auto object-cover rounded-md mt-4">
-                {% endif %}
-            </div>
 
-            <p class="text-white text-lg leading-7 mb-4">{{ object.description }}</p>
-
-        </div>
-
-        <h2 class="text-2xl text-center font-bold mt-8 mb-4">Submissions</h2>
+        <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
         
         <ul class="flex flex-col justify-center items-center">
             {% for submission_data in submissions_with_comments %}
@@ -65,7 +50,7 @@
                                 </button>
                             </form>
                             {% if submission_data.submission.is_winner %}
-                            <p class="text-yellow-400">Winner!</p>
+                            <p class="text-yellow-400">Gewinner!</p>
                             {% endif %}
                         </div>
                     </div>
@@ -73,11 +58,11 @@
                 
                 <div class="bg-gray-700 p-4 -mt-8 rounded-lg">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold mb-2">Comments</h3>
+                        <h3 class="text-xl font-bold mb-2">Kommentare</h3>
                         <div class="flex items-center">
                             <i class="fas fa-comments text-blue-400"></i>
                             <p class="ml-2">{{ submission_data.comments|length }}</p>
-                            <button class="text-xs text-blue-400 ml-2 toggle-comments-button">Show Comments</button>
+                            <button class="text-xs text-blue-400 ml-2 toggle-comments-button">Kommentare anzeigen</button>
                         </div>
                     </div>
                     <div class="comments-container h-auto overflow-y-auto mb-4 p-2 bg-gray-800 rounded hidden">
@@ -87,7 +72,7 @@
                                 <p class="text-white">{{ comment.text }}</p>
                                 <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"H:i" }}</p>
                                 {% if comment.replies.count > 0 %}
-                                <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Show Replies</button>
+                                <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
                                 <div class="replies-container hidden">
                                     {% for reply in comment.replies.all %}
                                     <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
@@ -100,7 +85,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
                         </div>
                         {% endfor %}
                     </div>
@@ -108,7 +93,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="parent" id="parent-comment-id">
                         <input type="text" name="text" placeholder="Write a comment..." class="flex-grow p-1 rounded-l-lg">
-                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Send</button>
+                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Senden</button>
                     </form>
                 </div>
             </li>
@@ -117,11 +102,11 @@
 
         {% if user.is_authenticated %}
         <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Upload Your Photos</h2>
+            <h2 class="text-2xl font-bold mb-4">Lade deine Fotos hoch</h2>
             <form method="post" enctype="multipart/form-data" action="{% url 'photo_challenge:photo_submission_create' object.id %}">
                 {% csrf_token %}
                 {{ submission_form.as_p }}
-                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Upload</button>
+                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Hochladen</button>
             </form>
         </div>
         {% endif %}

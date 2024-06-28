@@ -7,15 +7,20 @@ class PhotoChallengeForm(forms.ModelForm):
         fields = ['name', 'description', 'start_date', 'end_date']
         labels = {
             'name': 'Name',
-            'description': 'Description',
-            'start_date': 'Start Date',
+            'description': 'Beschreibung',
+            'start_date': 'Ende',
             'end_date': 'End Date',
         }
 
 class PhotoSubmissionForm(forms.ModelForm):
     class Meta:
         model = PhotoChallengeSubmission
-        fields = ['image1', 'image2', 'image3', 'description']
+        fields = ['image1', 'image2', 'image3']
+        labels = {
+            'image1': 'Bild 1',
+            'image2': 'Bild 2',
+            'image3': 'Bild 3',
+        }
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
