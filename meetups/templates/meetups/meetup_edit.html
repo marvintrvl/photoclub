@@ -6,7 +6,7 @@
     <div class="overflow-hidden shadow-sm sm:rounded-lg">
         <div class="bg-fgreen-800 rounded-lg p-4">
             <h1 class="text-3xl font-bold mb-4 text-white">Treffen bearbeiten: {{ meetup.title }}</h1>
-            <form method="post">
+            <form method="post" id="edit-form">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 {% for field in form %}
@@ -20,6 +20,10 @@
                     </div>
                     {% if field.widget_type == 'textarea' %}
                         <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ field.value|default_if_none:"" }}</textarea>
+                    {% elif field.widget_type == 'date' %}
+                        <input type="date" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:meetup.date }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    {% elif field.widget_type == 'time' %}
+                        <input type="time" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:meetup.time }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
                     {% else %}
                         <input type="{{ field.widget_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
                     {% endif %}
@@ -34,7 +38,6 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.edit-icon').on('click', function(e) {
@@ -45,6 +48,14 @@
             $input.toggleClass('hidden');
             $input.focus();
             $icon.parent().find('p').toggleClass('hidden');
+        });
+
+        $('#edit-form').on('submit', function() {
+            // Ensure hidden inputs are included in form submission
+            $('#edit-form').find('input:hidden, textarea:hidden').each(function() {
+                $(this).prop('disabled', false);
+            });
+            console.log('Form data:', $(this).serialize());
         });
     });
 </script>

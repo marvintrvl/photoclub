@@ -15,6 +15,8 @@ def profile_edit(request):
     interest_form = InterestForm()
     photo_genre_form = PhotoGenreForm()
     steckbrief_form = SteckbriefForm(instance=Steckbrief.objects.get_or_create(user=user)[0])
+    categories = PhotoCategory.objects.filter(user=request.user)
+    category_form = PhotoCategoryForm()
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=user)
@@ -28,6 +30,8 @@ def profile_edit(request):
         'interest_form': interest_form,
         'photo_genre_form': photo_genre_form,
         'steckbrief_form': steckbrief_form,
+        'categories': categories,
+        'category_form': category_form,
     }
     return render(request, 'members/profile_edit.html', context)
 
@@ -166,19 +170,31 @@ def member_detail(request, username):
     }
     return render(request, 'members/member_detail.html', context)
 
-
 @login_required
-def add_category(request):
+def manage_categories(request):
     if request.method == 'POST':
-        form = PhotoCategoryForm(request.POST)
-        if form.is_valid():
-            category = form.save(commit=False)
-            category.user = request.user
-            category.save()
-            return redirect('members:profile_edit')
-    else:
-        form = PhotoCategoryForm()
-    return render(request, 'members/profile_edit.html', {'form': form})
+        action = request.POST.get('action')
+        if action == 'add':
+            form = PhotoCategoryForm(request.POST)
+            if form.is_valid():
+                category = form.save(commit=False)
+                category.user = request.user
+                category.save()
+        elif action == 'update':
+            category_id = request.POST.get('category_id')
+            category = get_object_or_404(PhotoCategory, id=category_id, user=request.user)
+            form = PhotoCategoryForm(request.POST, instance=category)
+            if form.is_valid():
+                form.save()
+        elif action == 'delete':
+            category_id = request.POST.get('category_id')
+            category = get_object_or_404(PhotoCategory, id=category_id, user=request.user)
+            category.delete()
+        
+        return redirect('members:profile_edit')
+    
+    # If it's a GET request, we'll handle this in the profile_edit view
+    return redirect('members:profile_edit')
 
 @login_required
 def add_photo(request):

@@ -151,13 +151,35 @@
                     </div>
                 {% endif %}
                 {% if user.is_authenticated %}
+                    <!-- Category management section -->
+                    <h2 class="text-lg font-bold mb-2">Kategorie Verwaltung</h2>
+
                     <!-- Add category form -->
-                    <h2 class="text-lg font-bold mb-2">Neue Kategorie hinzufügen</h2>
-                    <form method="post" action="{% url 'members:add_category' %}">
+                    <form method="post" action="{% url 'members:manage_categories' %}">
                         {% csrf_token %}
-                        {{ form.name }}
+                        <input type="hidden" name="action" value="add">
+                        {{ category_form.name }}
                         <button type="submit" class="text-fgray-50 bg-forange-300 py-1 px-2 rounded-lg">Kategorie hinzufügen</button>
                     </form>
+
+                    <!-- List of existing categories -->
+                    {% for category in categories %}
+                        <div class="mt-2">
+                            <form method="post" action="{% url 'members:manage_categories' %}" class="inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="category_id" value="{{ category.id }}">
+                                <input type="text" name="name" value="{{ category.name }}" class="text-fgray-950 mb-2 inline-block">
+                                <button type="submit" class="text-fgray-50 bg-fgreen-500 py-1 px-2 rounded-lg">Aktualisieren</button>
+                            </form>
+                            <form method="post" action="{% url 'members:manage_categories' %}" class="inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="category_id" value="{{ category.id }}">
+                                <button type="submit" class="text-fgray-50 bg-fred-500 py-1 px-2 rounded-lg">Löschen</button>
+                            </form>
+                        </div>
+                    {% endfor %}
             
                     <!-- Add photo form -->
                     <h2 class="text-lg font-bold mb-2 mt-4">Neues Foto hinzufügen</h2>
@@ -191,7 +213,6 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.edit-icon').on('click', function(e) {

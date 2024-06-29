@@ -61,13 +61,23 @@ def meetup_list_private(request):
 def meetup_edit(request, pk):
     meetup = get_object_or_404(Meetup, pk=pk)
     if request.method == 'POST':
-        form = MeetupForm(request.POST, instance=meetup)
+        form_data = request.POST.copy()
+        if not form_data.get('date'):
+            form_data['date'] = meetup.date
+        if not form_data.get('time'):
+            form_data['time'] = meetup.time
+
+        form = MeetupForm(form_data, instance=meetup)
         if form.is_valid():
             form.save()
             return redirect('meetup_list_private')
+        else:
+            print("Form is not valid:", form.errors)
     else:
         form = MeetupForm(instance=meetup)
     return render(request, 'meetups/meetup_edit.html', {'form': form, 'meetup': meetup})
+
+
 
 @login_required
 def meetup_create(request):

@@ -123,19 +123,20 @@
     function closeAlert() {
         document.getElementById('alertBox').style.display = 'none';
     }
-document.addEventListener('DOMContentLoaded', function() {
-    const replyButtons = document.querySelectorAll('.reply-button');
-    const parentCommentIdInput = document.getElementById('parent-comment-id');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const replyButtons = document.querySelectorAll('.reply-button');
+        const parentCommentIdInput = document.getElementById('parent-comment-id');
 
-    replyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const commentId = this.getAttribute('data-comment-id');
-            parentCommentIdInput.value = commentId;
-            const commentInput = this.closest('.bg-gray-700').querySelector('input[name="text"]');
-            commentInput.focus();
-            commentInput.placeholder = 'Antworten...';
-        });
-    });
+        replyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                parentCommentIdInput.value = commentId;
+                const commentInput = this.closest('.bg-gray-700').querySelector('input[name="text"]');
+                commentInput.focus();
+                commentInput.placeholder = 'Antworten...';
+            });
+        }); 
 
     const toggleCommentsButtons = document.querySelectorAll('.toggle-comments-button');
     toggleCommentsButtons.forEach(button => {
