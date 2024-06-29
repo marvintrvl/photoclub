@@ -37,7 +37,7 @@
                             <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
                             <div>
                                 <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
-                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"F d, Y" }}</p>
+                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"d.m.Y H:i" }}</p>
                             </div>
                         </div>
                         <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
@@ -74,7 +74,7 @@
                         <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
                             <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
                                 <p class="text-white">{{ comment.text }}</p>
-                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"H:i" }}</p>
+                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"d.m.Y H:i" }}</p>
                                 {% if comment.replies.count > 0 %}
                                 <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
                                 <div class="replies-container hidden">
@@ -82,7 +82,7 @@
                                     <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
                                         <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
                                             <p class="text-white">{{ reply.text }}</p>
-                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"H:i" }}</p>
+                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"d.m.Y H:i" }}</p>
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -93,11 +93,11 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <form method="post" action="{% url 'editing_challenge:editing_add_comment' submission_data.submission.id %}" class="flex comment-form hidden">
+                    <form method="post" action="{% url 'editing_challenge:editing_add_comment' submission_data.submission.id %}" class="flex comment-form hidden text-fgray-950">
                         {% csrf_token %}
                         <input type="hidden" name="parent" class="parent-comment-id">
                         <input type="text" name="text" placeholder="Kommentar schreiben..." class="flex-grow p-1 rounded-l-lg">
-                        <button type="submit" class="bg-forange-300 text-white font-bold rounded-r-lg py-2 px-4">Senden</button>
+                        <button type="submit" class="bg-forange-300 text-fgray-50 font-bold rounded-r-lg py-2 px-4">Senden</button>
                     </form>
                 </div>
             </li>
