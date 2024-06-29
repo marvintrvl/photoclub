@@ -6,7 +6,6 @@ from .models import CustomUser, PhotoCategory, UserPhoto, Equipment, Interest, P
 from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm, EquipmentForm, InterestForm, PhotoGenreForm, SteckbriefForm
 from django.contrib.auth import authenticate, login, logout
 
-
 @login_required
 def profile_edit(request):
     user = request.user
@@ -14,7 +13,11 @@ def profile_edit(request):
     equipment_form = EquipmentForm()
     interest_form = InterestForm()
     photo_genre_form = PhotoGenreForm()
-    steckbrief_form = SteckbriefForm(instance=Steckbrief.objects.get_or_create(user=user)[0])
+
+    # Ensure Steckbrief instance exists
+    steckbrief, created = Steckbrief.objects.get_or_create(user=user, defaults={'image_editing': False, 'preferred_shooting': 'alone'})
+
+    steckbrief_form = SteckbriefForm(instance=steckbrief)
     categories = PhotoCategory.objects.filter(user=request.user)
     category_form = PhotoCategoryForm()
 

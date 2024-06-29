@@ -37,13 +37,15 @@ class PhotoGenre(models.Model):
 
 class Steckbrief(models.Model):
     user = models.OneToOneField(CustomUser, related_name='steckbrief', on_delete=models.CASCADE)
-    image_editing = models.BooleanField(verbose_name="What do you think about image editing?")
+    image_editing = models.BooleanField(verbose_name="What do you think about image editing?", default=False)
     preferred_shooting = models.CharField(
         max_length=100,
         choices=[('alone', 'Alone'), ('group', 'In a group')],
-        verbose_name="Do you prefer shooting alone or in a group?"
+        verbose_name="Do you prefer shooting alone or in a group?",
+        default='alone'
     )
     # Add more fields as needed
+
 
 class PhotoCategory(models.Model):
     user = models.ForeignKey(CustomUser, related_name='categories', on_delete=models.CASCADE)
