@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from datetime import timedelta
 from django.db import models
+from django.db.models import Count
 
 class PhotoChallengeListView(ListView):
     model = PhotoChallenge
@@ -35,19 +36,36 @@ class PhotoChallengeDetailView(DetailView):
         submissions_with_comments = []
         for submission in submissions:
             user_picture = submission.user.picture.url if submission.user.picture else None
-            has_voted = submission.votes.filter(user=self.request.user).exists() if self.request.user.is_authenticated else False
+            has_voted = {
+                1: submission.votes.filter(user=self.request.user, image_number=1).exists(),
+                2: submission.votes.filter(user=self.request.user, image_number=2).exists(),
+                3: submission.votes.filter(user=self.request.user, image_number=3).exists()
+            } if self.request.user.is_authenticated else {1: False, 2: False, 3: False}
+            
+            vote_counts = submission.votes.values('image_number').annotate(count=Count('id'))
+            vote_counts_dict = {vc['image_number']: vc['count'] for vc in vote_counts}
+
+            
+            comments = {
+                1: list(submission.comments.filter(image_number=1, parent__isnull=True)),
+                2: list(submission.comments.filter(image_number=2, parent__isnull=True)),
+                3: list(submission.comments.filter(image_number=3, parent__isnull=True))
+            }
+            
             submissions_with_comments.append({
                 'submission': submission,
-                'comments': submission.comments.filter(parent__isnull=True),
+                'comments': comments,
                 'user_picture': user_picture,
-                'has_voted': has_voted
+                'has_voted': has_voted,
+                'vote_counts': vote_counts_dict
             })
 
-        context['submission_form'] = PhotoSubmissionForm()
+        context['submission_form'] = PhotoSubmissionForm(user=self.request.user, challenge=challenge)
         context['comment_form'] = CommentForm()
         context['submissions_with_comments'] = submissions_with_comments
         context['can_vote'] = challenge.end_date < timezone.now().date() <= challenge.voting_period_end
-
+        context['user_votes_left'] = 3 - PhotoChallengeVote.user_vote_count(self.request.user, challenge) if self.request.user.is_authenticated else 0
+        context['image_numbers'] = [1, 2, 3]
         return context
 
 class PhotoChallengeCreateView(LoginRequiredMixin, CreateView):
@@ -129,16 +147,16 @@ class PhotoSubmissionCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': self.kwargs['challenge_id']})
 
-def vote_submission(request, submission_id):
+def vote_submission(request, submission_id, image_number):
     submission = get_object_or_404(PhotoChallengeSubmission, id=submission_id)
     if not submission.challenge.voting_period_end >= timezone.now().date() > submission.challenge.end_date:
         raise PermissionDenied("Das Abstimmen ist außerhalb des Abstimmungszeitraums nicht erlaubt.")
     
-    if PhotoChallengeVote.can_vote(request.user, submission):
-        PhotoChallengeVote.objects.create(submission=submission, user=request.user)
+    if PhotoChallengeVote.can_vote(request.user, submission, image_number):
+        PhotoChallengeVote.objects.create(submission=submission, user=request.user, image_number=image_number)
     return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)
 
-def add_comment(request, submission_id):
+def add_comment(request, submission_id, image_number):
     if request.method == 'POST':
         submission = get_object_or_404(PhotoChallengeSubmission, id=submission_id)
         form = CommentForm(request.POST)
@@ -146,7 +164,10 @@ def add_comment(request, submission_id):
             comment = form.save(commit=False)
             comment.user = request.user
             comment.submission = submission
+            comment.image_number = image_number
             comment.save()
+        else:
+            print(f"Form errors: {form.errors}")  # Add this line for debugging
     return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)
 
 def determine_winner():

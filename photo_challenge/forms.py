@@ -26,11 +26,11 @@ class PhotoSubmissionForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         self.challenge = kwargs.pop('challenge', None)
         super().__init__(*args, **kwargs)
-        print("Form initialized with user:", self.user)
-        print("Form initialized with challenge:", self.challenge)
 
     def save(self, commit=True):
         instance = super().save(commit=False)
+        if self.user:
+            instance.user = self.user
         if self.challenge:
             instance.challenge = self.challenge
         if commit:
@@ -40,8 +40,8 @@ class PhotoSubmissionForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = PhotoChallengeComment
-        fields = ['text', 'parent']
-        labels = {
-            'text': 'Text',
-            'parent': 'Parent',
+        fields = ['text', 'parent', 'image_number']
+        widgets = {
+            'parent': forms.HiddenInput(),
+            'image_number': forms.HiddenInput(),
         }

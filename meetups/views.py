@@ -77,8 +77,6 @@ def meetup_edit(request, pk):
         form = MeetupForm(instance=meetup)
     return render(request, 'meetups/meetup_edit.html', {'form': form, 'meetup': meetup})
 
-
-
 @login_required
 def meetup_create(request):
     if request.method == 'POST':

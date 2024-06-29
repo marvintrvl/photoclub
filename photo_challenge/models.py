@@ -46,24 +46,29 @@ class PhotoChallengeComment(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', related_name='replies', null=True, blank=True, on_delete=models.CASCADE)
+    image_number = models.IntegerField(choices=[(1, 'Image 1'), (2, 'Image 2'), (3, 'Image 3')])
 
     def __str__(self):
-        return f"Comment by {self.user.username} on {self.submission.id}"
+        return f"Comment by {self.user.username} on {self.submission.id} (Image {self.image_number})"
 
 class PhotoChallengeVote(models.Model):
     submission = models.ForeignKey(PhotoChallengeSubmission, related_name='votes', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    image_number = models.IntegerField(choices=[(1, 'Image 1'), (2, 'Image 2'), (3, 'Image 3')])
 
     class Meta:
-        unique_together = ('submission', 'user')
+        unique_together = ('submission', 'user', 'image_number')
 
     def __str__(self):
-        return f"Vote by {self.user.username} on {self.submission.id}"
+        return f"Vote by {self.user.username} on {self.submission.id} (Image {self.image_number})"
 
     @staticmethod
     def user_vote_count(user, challenge):
         return PhotoChallengeVote.objects.filter(user=user, submission__challenge=challenge).count()
 
     @staticmethod
-    def can_vote(user, submission):
-        return PhotoChallengeVote.user_vote_count(user, submission.challenge) < 3 and not PhotoChallengeVote.objects.filter(user=user, submission=submission).exists()
+    def can_vote(user, submission, image_number):
+        return (
+            PhotoChallengeVote.user_vote_count(user, submission.challenge) < 3
+            and not PhotoChallengeVote.objects.filter(user=user, submission=submission, image_number=image_number).exists()
+        )

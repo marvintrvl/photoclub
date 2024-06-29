@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
-
+{% load photo_challenge_extras %}
 {% block content %}
-<div class="bg-fgreen-800 min-w-7/8 rounded-lg mt-12 mb-8 mx-auto">
+<div class="bg-fgreen-800 w-[75vw] rounded-lg mt-12 mb-8 mx-auto">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         {% for message in messages %}           
         <div id="alertBox" class="bg-forange-300 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -20,80 +20,86 @@
         
         <ul class="flex flex-col justify-center items-center">
             {% for submission_data in submissions_with_comments %}
-            <li class="mb-8">
-                <div class="flex justify-center items-center">
-                    <div class="flex flex-col items-start p-4 mb-4" style="max-width: 640px; width: 100%;">
-                        <div class="flex items-center mb-4">
-                            <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
-                            <div>
-                                <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
-                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"d. F Y H:i" }}</p>
-                            </div>
-                        </div>
-                        <img src="{{ submission_data.submission.image1.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
-                        {% if submission_data.submission.image2 %}
-                        <img src="{{ submission_data.submission.image2.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
-                        {% endif %}
-                        {% if submission_data.submission.image3 %}
-                        <img src="{{ submission_data.submission.image3.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
-                        {% endif %}
-                        <div class="relative flex items-center">
-                            <form method="post" action="{% url 'photo_challenge:photo_vote_submission' submission_data.submission.id %}" class="flex items-center">
-                                {% csrf_token %}
-                                <button type="submit" class="font-bold flex items-center" {% if not user.is_authenticated or not can_vote %}disabled{% endif %}>
-                                    {% if submission_data.has_voted %}
-                                        <i class="fa-solid fa-heart text-red-500 mr-1"></i>
-                                    {% else %}
-                                        <i class="fa-regular fa-heart mr-1"></i>
-                                    {% endif %}
-                                    {{ submission_data.submission.votes.count }}
-                                </button>
-                            </form>
-                            <button class="ml-4 flex items-center text-blue-400 toggle-comments-button">
-                                <i class="fas fa-comments mr-1"></i>
-                                <span class="comment-counter">{{ submission_data.comments|length }}</span>
-                                <span class="comment-toggle-text hidden">Kommentare verbergen</span>
-                            </button>
-                            {% if submission_data.submission.is_winner %}
-                            <p class="text-yellow-400 ml-4">Gewinner!</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gray-700 p-4 -mt-8 rounded-lg comments-container hidden">
-                    <div class="comments-list">
-                        {% for comment in submission_data.comments %}
-                        <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
-                            <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
-                                <p class="text-white">{{ comment.text }}</p>
-                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"d. F Y H:i" }}</p>
-                                {% if comment.replies.count > 0 %}
-                                <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
-                                <div class="replies-container hidden">
-                                    {% for reply in comment.replies.all %}
-                                    <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
-                                        <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
-                                            <p class="text-white">{{ reply.text }}</p>
-                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"d. F Y H:i" }}</p>
+                <li class="mb-8">
+                    <div class="flex justify-center items-center">
+                        <div class="flex flex-col items-start p-4 mb-4" style="max-width: 640px; width: 100%;">
+                            {% for image_number in image_numbers %}
+                                {% with submission_data.submission|get_image:image_number as image %}
+                                    {% if image %}
+                                        <div class="mb-4">
+                                            <div class="flex items-center mb-4">
+                                                <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
+                                                    <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"d. F Y H:i" }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <img src="{{ image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-[500px] h-auto object-cover rounded-md mb-2">
+                                            
+                                            <div class="flex mt-1">
+                                                <div class="flex relative">
+                                                    <form method="post" action="{% url 'photo_challenge:photo_vote_submission' submission_data.submission.id image_number %}" class="flex items-center">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="font-bold flex items-center" {% if not user.is_authenticated or not can_vote or user_votes_left == 0 %}disabled{% endif %}>
+                                                            {% if submission_data.has_voted|get_item:image_number %}
+                                                                <i class="fa-solid fa-heart text-forange-600 mr-1"></i>
+                                                            {% else %}
+                                                                <i class="fa-regular fa-heart mr-1"></i>
+                                                            {% endif %}
+                                                            {{ submission_data.vote_counts|get_item:image_number|default:0 }}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div class="relative flex">
+                                                    <button class="ml-4 flex items-center text-blue-400 toggle-comments-button" data-image-number="{{ image_number }}">
+                                                        <i class="fas fa-comments mr-1"></i>
+                                                        <span class="comment-counter">{{ submission_data.comments|get_item:image_number|length }}</span>
+                                                        <span class="comment-toggle-text hidden">Kommentare verbergen</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-gray-700 p-4 mt-2 rounded-lg comments-container hidden" data-image-number="{{ image_number }}">
+                                                <div class="comments-list">
+                                                    {% for comment in submission_data.comments|get_item:image_number %}
+                                                    <div class="mb-4 {% if comment.user == user %}text-left{% endif %}">
+                                                        <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
+                                                            <p class="text-white">{{ comment.text }}</p>
+                                                            <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"d. F Y H:i" }}</p>
+                                                            {% if comment.replies.count > 0 %}
+                                                            <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
+                                                            <div class="replies-container hidden">
+                                                                {% for reply in comment.replies.all %}
+                                                                <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
+                                                                    <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
+                                                                        <p class="text-white">{{ reply.text }}</p>
+                                                                        <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"d. F Y H:i" }}</p>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                        <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <form method="post" action="{% url 'photo_challenge:photo_add_comment' submission_data.submission.id image_number %}" class="flex text-fgray-950 comment-form hidden">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="parent" class="parent-comment-id">
+                                                    <input type="hidden" name="image_number" value="{{ image_number }}">
+                                                    <input type="text" name="text" placeholder="Kommentar schreiben..." class="flex-grow p-1 rounded-l-lg">
+                                                    <button type="submit" class="bg-forange-300 text-fgray-50 font-bold rounded-r-lg py-2 px-4">Senden</button>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
-                    <form method="post" action="{% url 'photo_challenge:photo_add_comment' submission_data.submission.id %}" class="flex text-fgray-950 comment-form hidden">
-                        {% csrf_token %}
-                        <input type="hidden" name="parent" class="parent-comment-id">
-                        <input type="text" name="text" placeholder="Kommentar schreiben..." class="flex-grow p-1 rounded-l-lg">
-                        <button type="submit" class="bg-forange-300 text-fgray-50 font-bold rounded-r-lg py-2 px-4">Senden</button>
-                    </form>
-                </div>
-            </li>
+                </li>
             {% endfor %}
         </ul>
 
@@ -119,11 +125,12 @@
         const toggleCommentsButtons = document.querySelectorAll('.toggle-comments-button');
         const parentCommentIdInput = document.querySelectorAll('.parent-comment-id');
         const commentForms = document.querySelectorAll('.comment-form');
-
+    
         toggleCommentsButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const commentsContainer = this.closest('li').querySelector('.comments-container');
-                const commentForm = this.closest('li').querySelector('.comment-form');
+                const imageNumber = this.getAttribute('data-image-number');
+                const commentsContainer = this.closest('li').querySelector(`.comments-container[data-image-number="${imageNumber}"]`);
+                const commentForm = commentsContainer.querySelector('.comment-form');
                 const commentCounter = this.querySelector('.comment-counter');
                 const commentToggleText = this.querySelector('.comment-toggle-text');
                 commentsContainer.classList.toggle('hidden');
@@ -132,19 +139,19 @@
                 commentToggleText.classList.toggle('hidden');
             });
         });
-
+    
         const replyButtons = document.querySelectorAll('.reply-button');
         replyButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const commentId = this.getAttribute('data-comment-id');
-                const commentForm = this.closest('li').querySelector('.comment-form');
+                const commentForm = this.closest('.comments-container').querySelector('.comment-form');
                 commentForm.querySelector('.parent-comment-id').value = commentId;
                 const commentInput = commentForm.querySelector('input[name="text"]');
                 commentInput.focus();
                 commentInput.placeholder = 'Antworten...';
             });
         });
-
+    
         const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-button');
         toggleRepliesButtons.forEach(button => {
             button.addEventListener('click', function() {
