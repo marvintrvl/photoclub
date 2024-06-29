@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'photo_challenge',
     'editing_challenge',
     'widget_tweaks',
+    'fontawesomefree'
 ]
 
 MIDDLEWARE = [

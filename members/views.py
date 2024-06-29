@@ -148,7 +148,7 @@ def member_detail(request, username):
     equipment = member.equipment.all()
     interests = member.interests.all()
     photo_genres = member.photo_genres.all()
-    steckbrief = member.steckbrief
+    steckbrief = getattr(member, 'steckbrief', None)  # Safely get steckbrief or None if it doesn't exist
     
     # Group equipment by category
     grouped_equipment = {}
@@ -162,9 +162,10 @@ def member_detail(request, username):
         'grouped_equipment': grouped_equipment,
         'interests': interests,
         'photo_genres': photo_genres,
-        'steckbrief': steckbrief,
+        'steckbrief': steckbrief,  # Pass None if steckbrief doesn't exist
     }
     return render(request, 'members/member_detail.html', context)
+
 
 @login_required
 def add_category(request):
