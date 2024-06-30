@@ -176,3 +176,20 @@ def download_file(request, pk):
         return response
     else:
         raise Http404("File does not exist")
+    
+@login_required
+def delete_submission(request, submission_id):
+    submission = get_object_or_404(EditingChallengeSubmission, id=submission_id)
+
+    if submission.user != request.user:
+        raise PermissionDenied("You are not allowed to delete this submission.")
+
+    # Delete all related votes and comments
+    submission.votes.all().delete()
+    submission.comments.all().delete()
+
+    # Delete the submission itself
+    submission.delete()
+
+    messages.success(request, "Submission deleted successfully.")
+    return redirect('editing_challenge:editing_challenge_detail', pk=submission.challenge.id)

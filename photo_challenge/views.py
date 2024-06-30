@@ -189,3 +189,20 @@ def delete_photo_challenge(request, pk):
     challenge.delete()
     messages.error(request, "Die Foto Challenge wurde erfolgreich gelöscht.")
     return redirect(reverse('photo_challenge:photo_challenge_list_private'))
+
+@login_required
+def delete_submission(request, submission_id):
+    submission = get_object_or_404(PhotoChallengeSubmission, id=submission_id)
+
+    if submission.user != request.user:
+        raise PermissionDenied("You are not allowed to delete this submission.")
+
+    # Delete all related votes and comments
+    submission.votes.all().delete()
+    submission.comments.all().delete()
+
+    # Delete the submission itself
+    submission.delete()
+
+    messages.success(request, "Submission deleted successfully.")
+    return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)

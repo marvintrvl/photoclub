@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import meetup_list, meetup_detail, meetup_edit, meetup_list_private, meetup_create, add_meetup_image, delete_meetup_image
+from .views import delete_meetup, meetup_list, meetup_detail, meetup_edit, meetup_list_private, meetup_create, add_meetup_image, delete_meetup_image
 
 urlpatterns = [
     path('', meetup_list, name='meetup_list'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('create/', meetup_create, name='meetup_create'),
     path('<int:meetup_id>/add_image/', add_meetup_image, name='add_meetup_image'),  # Add this line
     path('<int:meetup_id>/image/<int:image_id>/delete/', delete_meetup_image, name='meetup_image_delete'),
+    path('delete/<int:pk>/', delete_meetup, name='delete_meetup'),
 ]

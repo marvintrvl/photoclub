@@ -64,6 +64,12 @@
                             {% if submission_data.submission.is_winner %}
                             <p class="text-yellow-400 ml-4">Gewinner!</p>
                             {% endif %}
+                            {% if user.is_authenticated and submission_data.submission.user == user %}
+                                <form method="post" action="{% url 'editing_challenge:delete_submission' submission_data.submission.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="py-1 px-2 bg-red-500 text-white rounded-full p-1 ml-4">Löschen</button>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

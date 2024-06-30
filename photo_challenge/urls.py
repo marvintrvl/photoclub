@@ -13,4 +13,5 @@ urlpatterns = [
     path('comment/<int:submission_id>/<int:image_number>/', views.add_comment, name='photo_add_comment'),
     path('challenge/edit/list/', views.PhotoChallengeEditListView.as_view(), name='photo_challenge_list_private'),
     path('challenge/delete/<int:pk>/', views.delete_photo_challenge, name='delete_photo_challenge'),
+    path('submission/delete/<int:submission_id>/', views.delete_submission, name='delete_submission'),
 ]

@@ -4,6 +4,8 @@ from .models import Meetup, MeetupImage, MeetupImage
 from .forms import MeetupForm, MeetupImageForm
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from django.contrib import messages
+from django.urls import reverse
 
 def meetup_list(request):
     today = timezone.now().date()
@@ -87,3 +89,11 @@ def meetup_create(request):
     else:
         form = MeetupForm()
     return render(request, 'meetups/meetup_create.html', {'form': form})
+
+@login_required
+def delete_meetup(request, pk):
+    meetup = get_object_or_404(Meetup, pk=pk)
+
+    meetup.delete()
+    messages.success(request, "Das Treffen wurde erfolgreich gelöscht.")
+    return redirect(reverse('meetup_list_private'))

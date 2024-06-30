@@ -14,4 +14,5 @@ urlpatterns = [
     path('comment/<int:submission_id>/', views.add_comment, name='editing_add_comment'),
     path('challenge/edit/list/', views.EditingChallengeEditListView.as_view(), name='editing_challenge_list_private'),
     path('challenge/download/<int:pk>/', views.download_file, name='editing_challenge_download'),
+    path('submission/delete/<int:submission_id>/', views.delete_submission, name='delete_submission'),
 ]
