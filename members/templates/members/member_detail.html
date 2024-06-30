@@ -2,7 +2,7 @@
 {% load custom_filters %}
 
 {% block content %}
-<div class="mt-12 mx-auto mb-8 min-w-[300px] flex flex-grow">
+<div class="mt-12 mx-auto mb-8 min-w-[300px] max-w-3/4 flex flex-grow">
     <div class="mx-auto rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold mb-4">{{ member.full_name }}</h1>
         <img src="{{ member.picture.url }}" alt="{{ member.full_name }}" class="w-48 h-48 object-fit rounded-sm mb-4">
@@ -11,10 +11,13 @@
             <h2 class="text-lg font-bold mb-2">Equipment</h2>
             <ul>
                 {% for category, items in grouped_equipment.items %}
-                    <li>
-                        <strong>{{ category|get_display_category }}:</strong>
-                        {{ items|join:", " }}
+                    <li class="">
+                        <strong class="">{{ category|get_display_category }}:</strong>
+                        {% for item in items %}
+                            <span class="px-2 py-1 ml-2 mb-2 bg-forange-300 rounded-full inline-block break-all">{{ item }}</span>
+                        {% endfor %}
                     </li>
+                    <li class="mb-4 flex flex-wrap"></li>
                 {% empty %}
                     <p>No equipment listed.</p>
                 {% endfor %}

@@ -8,8 +8,12 @@ class PhotoChallengeForm(forms.ModelForm):
         labels = {
             'name': 'Name',
             'description': 'Beschreibung',
-            'start_date': 'Ende',
-            'end_date': 'End Date',
+            'start_date': 'Startdatum',
+            'end_date': 'Enddatum',
+        }
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
 class PhotoSubmissionForm(forms.ModelForm):

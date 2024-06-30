@@ -52,7 +52,7 @@
                 <div class="mt-8">
                     <p class="text-white font-light mt-8">
                         <strong class="uppercase">Thema:</strong> {{ nearest_photo_challenge.name }} <br />
-                        <strong class="uppercase">Zeitraum:</strong> {{ nearest_photo_challenge.start_date | date:"d.m.Y" }} - {{ nearest_photo_challenge.end_date | date:"d.m.Y" }} <br />
+                        <strong class="uppercase">Zeitraum:</strong> {{ nearest_photo_challenge.start_date }} - {{ nearest_photo_challenge.end_date }} <br />
                         <strong class="uppercase">Beschreibung:</strong> {{ nearest_photo_challenge.description }} <br />
                     </p>
                     <a href="{{ nearest_photo_challenge.get_absolute_url }}" class="mt-4 inline-block bg-forange-300 text-white px-2 py-1 rounded-lg hover:bg-fgreen-900 transition duration-300">Details ansehen</a>
@@ -71,7 +71,7 @@
                 <div class="mt-8">
                     <p class="text-white font-light mt-8">
                         <strong class="uppercase">Thema:</strong> {{ nearest_editing_challenge.name }} <br />
-                        <strong class="uppercase">Zeitraum:</strong> {{ nearest_editing_challenge.start_date | date:"d.m.Y" }} - {{ nearest_editing_challenge.end_date | date:"d.m.Y" }} <br />
+                        <strong class="uppercase">Zeitraum:</strong> {{ nearest_editing_challenge.start_date }} - {{ nearest_editing_challenge.end_date }} <br />
                         <strong class="uppercase">Details:</strong> {{ nearest_editing_challenge.details }} <br />
                     </p>
                     <a href="{{ nearest_editing_challenge.get_absolute_url }}" class="mt-4 inline-block bg-forange-300 text-white px-2 py-1 rounded-lg hover:bg-fgreen-900 transition duration-300">Details ansehen</a>

@@ -1,16 +1,18 @@
+import os
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import EditingChallenge, EditingChallengeSubmission, EditingChallengeComment, EditingChallengeVote
 from .forms import EditingChallengeForm, EditingSubmissionForm, CommentForm
 from django.utils import timezone
-from django.http import JsonResponse
 from django.db import models
 from datetime import timedelta
 from django.urls import reverse, reverse_lazy
 from django.core.exceptions import PermissionDenied
 from members.models import CustomUser
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 class EditingChallengeListView(ListView):
@@ -56,7 +58,6 @@ class EditingChallengeDetailView(DetailView):
 
         return context
 
-
 class EditingChallengeCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallenge
     form_class = EditingChallengeForm
@@ -67,10 +68,41 @@ class EditingChallengeCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
-class EditingChallengeUpdateView(LoginRequiredMixin, UpdateView):
-    model = EditingChallenge
-    form_class = EditingChallengeForm
-    template_name = 'editing_challenge/editing_challenge_create.html'
+@login_required
+def editing_challenge_edit(request, pk):
+    challenge = get_object_or_404(EditingChallenge, pk=pk)
+    if request.method == 'POST':
+        form_data = request.POST.copy()
+        if not form_data.get('start_date'):
+            form_data['start_date'] = challenge.start_date
+        if not form_data.get('end_date'):
+            form_data['end_date'] = challenge.end_date
+
+        form = EditingChallengeForm(form_data, request.FILES, instance=challenge)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Die Editing Challenge wurde erfolgreich aktualisiert.")
+            if 'raw_preview' in request.FILES:
+                messages.info(request, "Eine neue Vorschau-Datei wurde hochgeladen.")
+            if 'raw_file' in request.FILES:
+                messages.info(request, "Eine neue Rohdatei wurde hochgeladen.")
+            return redirect(reverse('editing_challenge:editing_challenge_detail', kwargs={'pk': challenge.pk}))
+        else:
+            print("Form is not valid:", form.errors)
+    else:
+        form = EditingChallengeForm(instance=challenge)
+    return render(request, 'editing_challenge/editing_challenge_edit.html', {'form': form, 'challenge': challenge})
+
+@login_required
+def delete_editing_challenge(request, pk):
+    challenge = get_object_or_404(EditingChallenge, pk=pk)
+    if challenge.created_by != request.user:
+        messages.error(request, "Du hast keine Berechtigung, diese Challenge zu löschen.")
+        return redirect(reverse('editing_challenge:editing_challenge_list_private'))
+
+    challenge.delete()
+    messages.success(request, "Die Editing Challenge wurde erfolgreich gelöscht.")
+    return redirect(reverse('editing_challenge:editing_challenge_list_private'))
 
 class EditingSubmissionCreateView(LoginRequiredMixin, CreateView):
     model = EditingChallengeSubmission
@@ -133,4 +165,14 @@ class EditingChallengeEditListView(ListView):
     context_object_name = 'challenges'
 
     def get_queryset(self):
-        return EditingChallenge.objects.filter(created_by=self.request.user)
+        return EditingChallenge.objects.all().order_by('end_date')
+
+@login_required
+def download_file(request, pk):
+    challenge = get_object_or_404(EditingChallenge, pk=pk)
+    file_path = challenge.raw_file.path
+    if os.path.exists(file_path):
+        response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=os.path.basename(file_path))
+        return response
+    else:
+        raise Http404("File does not exist")

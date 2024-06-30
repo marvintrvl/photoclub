@@ -8,7 +8,7 @@
             <span class="block sm:inline">{{ message }}</span>
             <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeAlert()">
               <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <title>Close</title>
+                <title>Schließen</title>
                 <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
               </svg>
             </span>
@@ -22,7 +22,7 @@
             </div>
 
             <p class="text-white text-lg leading-7 mb-4">Regeln: {{ object.details }}</p>
-            <a href="{{ object.raw_file.url }}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
+            <a href="{% url 'editing_challenge:editing_challenge_download' object.pk %}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
 
         </div>
 
@@ -37,7 +37,7 @@
                             <img src="{{ submission_data.user_picture }}" alt="{{ submission_data.submission.user.username }}" class="w-8 h-8 rounded-full mr-3">
                             <div>
                                 <p class="font-semibold">{{ submission_data.submission.user.username }}</p>
-                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at|date:"d.m.Y H:i" }}</p>
+                                <p class="text-xs text-gray-500">{{ submission_data.submission.submitted_at }}</p>
                             </div>
                         </div>
                         <img src="{{ submission_data.submission.edited_image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-96 h-auto object-cover rounded-md mb-2">
@@ -74,7 +74,7 @@
                         <div class="mb-4 {% if comment.user == user %}text-right{% endif %}">
                             <div class="inline-block bg-gray-600 rounded-lg p-2 max-w-3/4">
                                 <p class="text-white">{{ comment.text }}</p>
-                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at|date:"d.m.Y H:i" }}</p>
+                                <p class="text-xs text-gray-400">{{ comment.user.username }} - {{ comment.created_at }}</p>
                                 {% if comment.replies.count > 0 %}
                                 <button class="text-xs text-blue-400 mt-1 toggle-replies-button" data-comment-id="{{ comment.id }}">Antworten anzeigen</button>
                                 <div class="replies-container hidden">
@@ -82,7 +82,7 @@
                                     <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
                                         <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
                                             <p class="text-white">{{ reply.text }}</p>
-                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"d.m.Y H:i" }}</p>
+                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at }}</p>
                                         </div>
                                     </div>
                                     {% endfor %}

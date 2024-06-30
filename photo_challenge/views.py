@@ -4,12 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import PhotoChallenge, PhotoChallengeSubmission, PhotoChallengeComment, PhotoChallengeVote
 from .forms import PhotoChallengeForm, PhotoSubmissionForm, CommentForm
 from django.utils import timezone
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from datetime import timedelta
 from django.db import models
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 class PhotoChallengeListView(ListView):
     model = PhotoChallenge
@@ -68,45 +69,36 @@ class PhotoChallengeDetailView(DetailView):
         context['image_numbers'] = [1, 2, 3]
         return context
 
+@login_required
+def photo_challenge_edit(request, pk):
+    challenge = get_object_or_404(PhotoChallenge, pk=pk)
+    if request.method == 'POST':
+        form_data = request.POST.copy()
+        if not form_data.get('start_date'):
+            form_data['start_date'] = challenge.start_date
+        if not form_data.get('end_date'):
+            form_data['end_date'] = challenge.end_date
+
+        form = PhotoChallengeForm(form_data, instance=challenge)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Die Foto Challenge wurde erfolgreich aktualisiert.")
+            return redirect(reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': challenge.pk}))
+        else:
+            print("Form is not valid:", form.errors)
+    else:
+        form = PhotoChallengeForm(instance=challenge)
+    return render(request, 'photo_challenge/photo_challenge_edit.html', {'form': form, 'challenge': challenge})
+    
 class PhotoChallengeCreateView(LoginRequiredMixin, CreateView):
-    model = PhotoChallengeSubmission
-    form_class = PhotoSubmissionForm
-    template_name = 'photo_challenge/photo_challenge_detail.html'
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        kwargs['challenge'] = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
-        return kwargs
-
-    def dispatch(self, request, *args, **kwargs):
-        self.challenge = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
-        if PhotoChallengeSubmission.objects.filter(user=request.user, challenge=self.challenge).exists():
-            messages.success(request, "Du kannst nur 3 Fotos pro Challenge hochladen.")
-            return redirect('photo_challenge:photo_challenge_detail', pk=self.kwargs['challenge_id'])
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_invalid(self, form):
-        messages.success(self.request, "Es gab ein Problem beim Hochladen deines Fotos. Bitte versuche es erneut.")
-        return super().form_invalid(form)
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.challenge = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
-        response = super().form_valid(form)
-        messages.success(self.request, "Dein Foto wurde erfolgreich hochgeladen.")
-        return response
-
-    def get_success_url(self):
-        return reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': self.kwargs['challenge_id']})
-
-class PhotoChallengeUpdateView(LoginRequiredMixin, UpdateView):
     model = PhotoChallenge
     form_class = PhotoChallengeForm
     template_name = 'photo_challenge/photo_challenge_create.html'
+    success_url = reverse_lazy('photo_challenge:photo_challenge_list_private')
 
-    def get_success_url(self):
-        return reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': self.object.pk})
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 class PhotoSubmissionCreateView(LoginRequiredMixin, CreateView):
     model = PhotoChallengeSubmission
@@ -185,4 +177,15 @@ class PhotoChallengeEditListView(ListView):
     context_object_name = 'challenges'
 
     def get_queryset(self):
-        return PhotoChallenge.objects.filter(created_by=self.request.user)
+        return PhotoChallenge.objects.all().order_by('end_date')
+    
+@login_required
+def delete_photo_challenge(request, pk):
+    challenge = get_object_or_404(PhotoChallenge, pk=pk)
+    if challenge.created_by != request.user:
+        messages.error(request, "Du hast keine Berechtigung, diese Challenge zu löschen.")
+        return redirect(reverse('photo_challenge:photo_challenge_list_private'))
+
+    challenge.delete()
+    messages.error(request, "Die Foto Challenge wurde erfolgreich gelöscht.")
+    return redirect(reverse('photo_challenge:photo_challenge_list_private'))

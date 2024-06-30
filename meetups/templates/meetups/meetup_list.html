@@ -9,7 +9,7 @@
             {% for meetup in upcoming_meetups %}
             <div class="bg-gray-800 p-4 flex flex-col justify-start md:justify-center items-start">
                 <h2 class="text-white text-lg font-bold">{{ meetup.title }}</h2>
-                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date|date:"d M, Y" }}</p>
+                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}</p>
                 <p class="text-gray-400 font-light"><strong class="uppercase">Thema:</strong> {{ meetup.topic }}</p>
                 <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
             </div>
@@ -26,7 +26,7 @@
             {% for meetup in past_meetups %}
             <div class="bg-gray-800 p-4 flex flex-col justify-center items-start">
                 <h2 class="text-white text-lg font-bold">{{ meetup.title }}</h2>
-                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date|date:"d M, Y" }}</p>
+                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}</p>
                 <p class="text-gray-400 font-light"><strong class="uppercase">Thema:</strong> {{ meetup.topic }}</p>
                 <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
             </div>

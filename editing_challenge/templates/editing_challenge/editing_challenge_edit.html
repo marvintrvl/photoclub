@@ -1,0 +1,79 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mt-12 mb-8 rounded-lg max-w-3/4 mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-fgreen-800 rounded-lg p-4">
+            <h1 class="text-3xl font-bold mb-4 text-white">Editing Challenge bearbeiten: {{ challenge.name }}</h1>
+            <form method="post" id="edit-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-50">{{ field.label }}</label>
+                    <div class="flex items-center">
+                        <div class="flex-grow">
+                            {% if field.name == 'raw_preview' %}
+                                {% if field.value %}
+                                    <p class="text-white">Aktuelles Preview: {{ field.value }}</p>
+                                    <img src="{{ challenge.raw_preview.url }}" alt="Preview" class="mt-2 w-80 block h-auto">
+                                {% else %}
+                                    <p class="text-white">Es wurde noch kein Preview hochgeladen.</p>
+                                {% endif %}
+                                <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" accept="image/*">
+                            {% elif field.name == 'raw_file' %}
+                                {% if field.value %}
+                                    <p class="text-white">Aktuele RAW-Datei: {{ field.value }}</p>
+                                {% else %}
+                                    <p class="text-white">Es wurde noch keine RAW-Datei hochgeladen.</p>
+                                {% endif %}
+                                <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                            {% elif field.value %}
+                                <p class="text-white">{{ field.value|default_if_none:"" }}</p>
+                            {% endif %}
+                        </div>
+                        {% if field.name != 'raw_preview' and field.name != 'raw_file' %}
+                            <a href="#" class="ml-2 text-gray-400 hover:text-gray-600 edit-icon"><i class="fas fa-edit"></i></a>
+                        {% endif %}
+                    </div>
+                    {% if field.widget_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">{{ field.value|default_if_none:"" }}</textarea>
+                    {% elif field.widget_type == 'date' %}
+                        <input type="date" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:challenge.start_date }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    {% elif field.name != 'raw_preview' and field.name != 'raw_file' %}
+                        <input type="{{ field.widget_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}" class="text-fgray-900 mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md hidden">
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="mt-6 text-fgray-900">
+                    <button type="submit" class="bg-forange-300 gray-800 text-fgray-950 px-4 py-2 rounded-md hover:bg-gray-700">Änderungen speichern</button>
+                </div>
+            </form>
+            <a href="{% url 'editing_challenge:editing_challenge_list_private' %}" class="inline-block mt-4 text-gray-400 hover:text-gray-200">Zurück zum Challenge Management</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('.edit-icon').on('click', function(e) {
+            e.preventDefault();
+            var $icon = $(this);
+            var $input = $icon.closest('.mb-4').find('input, textarea');
+
+            $input.toggleClass('hidden');
+            $input.focus();
+            $icon.parent().find('p').toggleClass('hidden');
+        });
+
+        $('#edit-form').on('submit', function() {
+            // Ensure hidden inputs are included in form submission
+            $('#edit-form').find('input:hidden, textarea:hidden').each(function() {
+                $(this).prop('disabled', false);
+            });
+            console.log('Form data:', $(this).serialize());
+        });
+    });
+</script>
+{% endblock %}
