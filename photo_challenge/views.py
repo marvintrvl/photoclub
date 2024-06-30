@@ -191,18 +191,28 @@ def delete_photo_challenge(request, pk):
     return redirect(reverse('photo_challenge:photo_challenge_list_private'))
 
 @login_required
-def delete_submission(request, submission_id):
+def delete_submission_image(request, submission_id, image_number):
     submission = get_object_or_404(PhotoChallengeSubmission, id=submission_id)
 
     if submission.user != request.user:
-        raise PermissionDenied("You are not allowed to delete this submission.")
+        raise PermissionDenied("You are not allowed to delete this image.")
 
-    # Delete all related votes and comments
-    submission.votes.all().delete()
-    submission.comments.all().delete()
-
-    # Delete the submission itself
-    submission.delete()
-
-    messages.success(request, "Submission deleted successfully.")
+    # Remove the image field
+    if image_number == 1:
+        submission.image1.delete()
+        submission.image1 = None
+    elif image_number == 2:
+        submission.image2.delete()
+        submission.image2 = None
+    elif image_number == 3:
+        submission.image3.delete()
+        submission.image3 = None
+    
+    # Delete associated votes and comments
+    PhotoChallengeVote.objects.filter(submission=submission, image_number=image_number).delete()
+    PhotoChallengeComment.objects.filter(submission=submission, image_number=image_number).delete()
+    
+    submission.save()
+    messages.success(request, "Image and its associated votes and comments deleted successfully.")
     return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)
+

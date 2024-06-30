@@ -59,7 +59,7 @@
                                                     </button>
                                                 </div>
                                                 {% if user.is_authenticated and submission_data.submission.user == user %}
-                                                    <form method="post" action="{% url 'photo_challenge:delete_submission' submission_data.submission.id %}">
+                                                    <form method="post" action="{% url 'photo_challenge:delete_submission_image' submission_data.submission.id image_number %}">
                                                         {% csrf_token %}
                                                         <button type="submit" class="py-1 px-2 bg-red-500 text-white rounded-full p-1 ml-4">Löschen</button>
                                                     </form>
