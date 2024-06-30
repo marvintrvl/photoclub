@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-&on%)(ii+r+y6@=^ky8g!vrcem3+yu1f(flphb_cn5u**n^+i_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fototreff-dresden.de']
 
 # Internationalization settings
 USE_I18N = True
@@ -170,3 +170,4 @@ LOGGING = {
         },
     },
 }
+
