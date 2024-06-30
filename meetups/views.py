@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Meetup, MeetupImage, MeetupImage
+from .models import Meetup, MeetupImage
 from .forms import MeetupForm, MeetupImageForm
 from django.http import HttpResponseForbidden
 from django.utils import timezone
@@ -105,3 +105,15 @@ def delete_meetup(request, pk):
     meetup.delete()
     messages.success(request, "Das Treffen wurde erfolgreich gelöscht.")
     return redirect(reverse('meetup_list_private'))
+
+@login_required
+def join_meetup(request, meetup_id):
+    meetup = get_object_or_404(Meetup, id=meetup_id)
+    meetup.attendees.add(request.user)
+    return redirect('meetup_detail', pk=meetup.id)
+
+@login_required
+def leave_meetup(request, meetup_id):
+    meetup = get_object_or_404(Meetup, id=meetup_id)
+    meetup.attendees.remove(request.user)
+    return redirect('meetup_detail', pk=meetup.id)

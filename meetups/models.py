@@ -16,6 +16,7 @@ class Meetup(models.Model):
     google_maps_link = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    attendees = models.ManyToManyField(CustomUser, related_name='attending_meetups', blank=True)
 
     def __str__(self):
         return self.title
