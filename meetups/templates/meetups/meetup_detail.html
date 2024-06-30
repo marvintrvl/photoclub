@@ -13,14 +13,26 @@
         <p class="text-gray-400 mt-4"><span class="text-xl font-bold mb-2">Datum: </span> {{ meetup.date }}</p>
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Ort: </span> {{ meetup.location }}</p>
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Thema: </span> {{ meetup.topic }}</p>
+        {% if meetup.google_maps_link %}
+            <a href="{{ meetup.google_maps_link }}" class="bg-forange-300 py-1 px-2 rounded-lg text-white mt-2 inline-block">Treffpunkt</a>
+        {% endif %}
 
         <div class="mt-8">
             <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
             {% for image in meetup.images.all %}
                 <div class="first:mt-0 relative mt-4">
+                    
                     <a href="{{ image.image.url }}" data-lightbox="roadtrip">
                         <img src="{{ image.image.url }}" alt="Image for {{ meetup.title }}" class="w-full h-auto object-cover rounded-md">
                     </a>
+
+                    <div class="absolute top-2 left-2 inline-block">
+                        <a href="{% url 'members:member_detail' image.user.username %}" class="">
+                            <img src="{{ image.user.picture.url }}" alt="{{ image.user.username }}" class="w-8 h-8 rounded-full inline-block">
+                            <span class="font-semibold">{{ image.user.username }}</span>
+                        </a>
+                    </div>
+
                     {% if user.is_authenticated and image.user == user %}
                         <form method="post" action="{% url 'meetup_image_delete' meetup.id image.id %}">
                             {% csrf_token %}

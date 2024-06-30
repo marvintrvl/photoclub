@@ -4,7 +4,7 @@ from .models import Meetup, MeetupImage
 class MeetupForm(forms.ModelForm):
     class Meta:
         model = Meetup
-        fields = ['title', 'short_description', 'detailed_description', 'date', 'time', 'location', 'topic']
+        fields = ['title', 'short_description', 'detailed_description', 'date', 'time', 'location', 'topic', 'google_maps_link']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
@@ -17,6 +17,7 @@ class MeetupForm(forms.ModelForm):
             'time': 'Uhrzeit',
             'location': 'Ort',
             'topic': 'Thema',
+            'google_maps_link': 'Google Maps Link',
         }
 
 class MeetupImageForm(forms.ModelForm):

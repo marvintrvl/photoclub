@@ -1,8 +1,17 @@
 {% extends "main/base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="hero">
-    <img src="static/images/hero1.jpg" alt="Hero Image" class="w-full h-auto object-cover" />
+<div class="hero relative">
+    {% if image_of_the_day %}
+        <img src="{{ image_of_the_day.image.url }}" alt="Image of the day" class="w-full h-auto object-cover">
+        <div class="rounded-2xl bg-fgray-100 bg-opacity-70 py-1 px-6 absolute bottom-12 right-28 p-4 bg-black">
+            <p class="text-base text-fgray-950 block">&#169 {{ image_of_the_day.user.username }}</p>
+            <a href="{% url 'members:member_detail' image_of_the_day.user.username %}" class="text-fgray-950 text-base uppercase">Zum Profil</a>
+        </div>
+    {% else %}
+        <img src="{% static 'images/hero1.jpg' %}" alt="Hero Image" class="w-full h-auto object-cover">
+    {% endif %}
 </div>
 
 <div class="bg-fblue-950 text-fgray-50 pt-12 pb-16">

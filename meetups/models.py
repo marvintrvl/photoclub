@@ -13,6 +13,7 @@ class Meetup(models.Model):
     time = models.TimeField(default=default_meetup_time)  # Set default using a function
     location = models.CharField(max_length=200)
     topic = models.CharField(max_length=200)
+    google_maps_link = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

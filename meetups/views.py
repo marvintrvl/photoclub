@@ -28,7 +28,15 @@ def meetup_detail(request, pk):
             return redirect('meetup_detail', pk=meetup.id)
     else:
         form = MeetupImageForm()
-    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup, 'form': form})
+    
+    user_picture = request.user.picture.url if request.user.picture else None
+    
+    return render(request, 'meetups/meetup_detail.html', {
+        'meetup': meetup,
+        'form': form,
+        'user_picture': user_picture,
+        'username': request.user.username,
+    })
 
 @login_required
 def delete_meetup_image(request, meetup_id, image_id):

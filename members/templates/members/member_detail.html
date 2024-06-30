@@ -4,8 +4,8 @@
 {% block content %}
 <div class="mt-12 mx-auto mb-8 min-w-[300px] w-[75vw] flex flex-grow">
     <div class="mx-auto rounded px-8 pt-6 pb-8 mb-4">
-        <h1 class="text-2xl font-bold mb-4">{{ member.full_name }}</h1>
-        <img src="{{ member.picture.url }}" alt="{{ member.full_name }}" class="w-48 h-48 object-fit rounded-sm mb-4">
+        <h1 class="text-2xl font-bold mb-4">{{ member.username }}</h1>
+        <img src="{{ member.picture.url }}" alt="{{ member.username }}" class="w-48 h-48 object-fit rounded-sm mb-4">
 
         <div class="flex flex-col mb-4">
             <h2 class="text-xl font-normal mb-2">Equipment</h2>
@@ -50,20 +50,6 @@
             <h2 class="text-lg font-bold mb-2">Über mich</h2>
             <p>{{ member.description }}</p>
         </div>
-
-        {% if steckbrief %}
-        <div class="mb-4">
-            <h2 class="text-lg font-bold mb-2">Steckbrief</h2>
-            <p>Image Editing: {{ steckbrief.image_editing|yesno:"Yes,No" }}</p>
-            <p>Preferred Shooting: {{ steckbrief.get_preferred_shooting_display }}</p>
-            <!-- Add more Steckbrief fields as needed -->
-        </div>
-        {% else %}
-            <div class="mb-4">
-                <h2 class="text-lg font-bold mb-2">Steckbrief</h2>
-                <p>Not available.</p>
-            </div>
-        {% endif %}
 
         <!-- Categories and Photos -->
         <div class="mt-8">

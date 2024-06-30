@@ -4,9 +4,10 @@ from .models import CustomUser, PhotoCategory, UserPhoto, Equipment, Interest, P
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'email', 'description', 'picture']
+        fields = ['full_name', 'username', 'email', 'description', 'picture']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'text-fgray-950 mb-2 block w-full'}),
+            'username': forms.TextInput(attrs={'class': 'text-fgray-950 mb-2 block w-full'}),
             'email': forms.EmailInput(attrs={'class': 'text-fgray-950 mb-2 block w-full'}),
             'description': forms.Textarea(attrs={'class': 'text-fgray-950 mb-2 block w-full'}),
             'picture': forms.FileInput(attrs={'class': 'text-fgray-950 mb-2 block w-full'}),
