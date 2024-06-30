@@ -1,6 +1,6 @@
 {% extends 'main/base.html' %}
 {% block content %}
-<h1 class="text-2xl font-bold mb-4 mt-12 text-center">Foto-Challenges</h1>
+<h1 class="text-2xl w-[75vw] font-bold mb-4 mt-12 text-center">Foto-Challenges</h1>
 <div class="bg-fgreen-600 text-fgray-50 pt-12 pb-16 mt-12">
     <div class="text-fgray-50 pb-16 mb-8">
         <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Laufende Foto-Challenges</h2>
@@ -19,7 +19,7 @@
 </div>
 
 <!-- Vergangene Challenges Sektion -->
-<div class="bg-fblue-950 text-fgray pt-12 pb-16">
+<div class="bg-fblue-950 text-fgray w-[75vw] pt-12 pb-16">
     <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Vergangene Foto-Challenges</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
         {% for challenge in past_challenges %}

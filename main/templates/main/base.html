@@ -9,6 +9,8 @@
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet"/>
+    <script src="{% static 'js/lightbox-plus-jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-3.7.1.min.js' %}"></script>     
 </head>
 <body class="bg-fblue-950 flex flex-col min-h-screen">
@@ -50,16 +52,15 @@
                     </a>
                 </div>
             </div>
-            <div class="relative -mt-6 hidden md:block mx-auto md:max-w-3/5 lg:max-w-3/4 bg-fgreen-600 rounded-2xl py-1">
+            <div class="relative -mt-6 hidden md:block mx-auto w-[75vw] bg-fgreen-600 rounded-2xl py-1">
                 <div class="flex items-baseline justify-center space-x-4 uppercase">
                     <a href="{% url 'index' %}" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Startseite</a>
                     <div class="relative group">
                         <a href="#" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Challenges</a>
-                        <div class="mt-[10px] absolute left-1/2 transform -translate-x-1/2 bg-fgreen-600 rounded-b-lg opacity-0 invisible transition-all duration-300 flex 
-                                    group-hover:opacity-100 group-hover:visible">
-                            <a href="{% url 'photo_challenge:photo_challenge_list' %}" class="text-fgray-50 flex-1 block px-2 py-1 text-sm hover:bg-fgreen-500 hover:text-white">Foto Challenges</a>
-                            <a href="{% url 'editing_challenge:editing_challenge_list' %}" class="text-fgray-50 flex-1 block px-2 py-1 text-sm hover:bg-fgreen-500 hover:text-white">Editing Challenges</a>
-                        </div>
+                        <div class="mt-[10px] flex-grow absolute left-1/2 transform -translate-x-1/2 bg-fgreen-600 rounded-b-lg opacity-0 invisible transition-all duration-300 flex flex-col group-hover:opacity-100 group-hover:visible">
+                            <a href="{% url 'photo_challenge:photo_challenge_list' %}" class="text-fgray-50 whitespace-nowrap block px-2 py-1 text-sm hover:bg-fgreen-500 hover:text-white">Foto Challenges</a>
+                            <a href="{% url 'editing_challenge:editing_challenge_list' %}" class="text-fgray-50 whitespace-nowrap block px-2 py-1 text-sm hover:bg-fgreen-500 hover:text-white">Editing Challenges</a>
+                        </div>                        
                     </div>                                                     
                     <a href="{% url 'meetup_list' %}" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Treffen</a>
                     <a href="{% url 'members:member_list' %}" class="text-fgray-50 hover:bg-fgreen-500 hover:text-white px-3 py-2 rounded-md text-sm font-normal">Mitglieder</a>

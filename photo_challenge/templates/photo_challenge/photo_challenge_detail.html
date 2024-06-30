@@ -16,6 +16,9 @@
         {% endfor %}
         <h1 class="text-3xl font-bold mb-8 text-center">{{ object.name }}</h1>
 
+        <p class="text-center">Start: {{ object.start_date }}</p>
+        <p class="text-center">Ende: {{ object.end_date }}</p>
+
         <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
         
         <ul class="flex flex-col justify-center items-center">
@@ -35,21 +38,25 @@
                                                 </div>
                                             </div>
                                             
-                                            <img src="{{ image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-[500px] h-auto object-cover rounded-md mb-2">
+                                            <a href="{{ image.url }}" data-lightbox="roadtrip">
+                                                <img src="{{ image.url }}" alt="Submission by {{ submission_data.submission.user.username }}" class="w-[500px] h-auto object-cover rounded-md mb-2">
+                                            </a>
                                             
                                             <div class="flex mt-1">
                                                 <div class="flex relative">
-                                                    <form method="post" action="{% url 'photo_challenge:photo_vote_submission' submission_data.submission.id image_number %}" class="flex items-center">
-                                                        {% csrf_token %}
-                                                        <button type="submit" class="font-bold flex items-center" {% if not user.is_authenticated or not can_vote or user_votes_left == 0 %}disabled{% endif %}>
-                                                            {% if submission_data.has_voted|get_item:image_number %}
-                                                                <i class="fa-solid fa-heart text-forange-600 mr-1"></i>
-                                                            {% else %}
-                                                                <i class="fa-regular fa-heart mr-1"></i>
-                                                            {% endif %}
-                                                            {{ submission_data.vote_counts|get_item:image_number|default:0 }}
-                                                        </button>
-                                                    </form>
+                                                    {% if can_vote %}
+                                                        <form method="post" action="{% url 'photo_challenge:photo_vote_submission' submission_data.submission.id image_number %}" class="flex items-center">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="font-bold flex items-center" {% if not user.is_authenticated or user_votes_left == 0 %}disabled{% endif %}>
+                                                                {% if submission_data.has_voted|get_item:image_number %}
+                                                                    <i class="fa-solid fa-heart text-forange-600 mr-1"></i>
+                                                                {% else %}
+                                                                    <i class="fa-regular fa-heart mr-1"></i>
+                                                                {% endif %}
+                                                                {{ submission_data.vote_counts|get_item:image_number|default:0 }}
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="relative flex">
                                                     <button class="ml-4 flex items-center text-blue-400 toggle-comments-button" data-image-number="{{ image_number }}">
