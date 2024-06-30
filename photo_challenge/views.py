@@ -112,29 +112,30 @@ class PhotoSubmissionCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
-        challenge = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
-        if PhotoChallengeSubmission.objects.filter(user=request.user, challenge=challenge).exists():
-            messages.success(request, "Du kannst nur 1 Beitrag pro Challenge hochladen.")
-            return redirect('photo_challenge:photo_challenge_detail', pk=self.kwargs['challenge_id'])
+        self.challenge = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
+        self.submission = PhotoChallengeSubmission.objects.filter(user=request.user, challenge=self.challenge).first()
         return super().dispatch(request, *args, **kwargs)
 
-    def form_invalid(self, form):
-        messages.success(self.request, "Es gab ein Problem beim Hochladen deines Fotos. Bitte versuche es erneut.")
-        return super().form_invalid(form)
-
     def form_valid(self, form):
-        print("Formulardaten:", form.cleaned_data)
-        print("Challenge-ID aus der URL:", self.kwargs.get('challenge_id'))
-        print("Benutzer:", self.request.user)
-        
-        form.instance.user = self.request.user
-        form.instance.challenge = get_object_or_404(PhotoChallenge, id=self.kwargs['challenge_id'])
-        
-        print("Challenge dem Formular-Objekt zugewiesen:", form.instance.challenge)
-        
-        response = super().form_valid(form)
-        messages.success(self.request, "Dein Foto wurde erfolgreich hochgeladen.")
-        return response
+        new_image = form.cleaned_data.get('new_image')
+        if self.submission:
+            if not self.submission.image1:
+                self.submission.image1 = new_image
+            elif not self.submission.image2:
+                self.submission.image2 = new_image
+            elif not self.submission.image3:
+                self.submission.image3 = new_image
+            else:
+                form.add_error(None, "You cannot upload more than 3 images.")
+                return self.form_invalid(form)
+            self.submission.save()
+            messages.success(self.request, "Your image has been uploaded successfully.")
+        else:
+            form.instance.user = self.request.user
+            form.instance.challenge = self.challenge
+            form.instance.image1 = new_image
+            return super().form_valid(form)
+        return redirect('photo_challenge:photo_challenge_detail', pk=self.challenge.id)
 
     def get_success_url(self):
         return reverse('photo_challenge:photo_challenge_detail', kwargs={'pk': self.kwargs['challenge_id']})

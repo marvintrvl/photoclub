@@ -17,13 +17,13 @@ class PhotoChallengeForm(forms.ModelForm):
         }
 
 class PhotoSubmissionForm(forms.ModelForm):
+    new_image = forms.ImageField(required=True)
+
     class Meta:
         model = PhotoChallengeSubmission
-        fields = ['image1', 'image2', 'image3']
+        fields = ['new_image']
         labels = {
-            'image1': 'Bild 1',
-            'image2': 'Bild 2',
-            'image3': 'Bild 3',
+            'new_image': 'Bild',
         }
 
     def __init__(self, *args, **kwargs):
@@ -31,15 +31,13 @@ class PhotoSubmissionForm(forms.ModelForm):
         self.challenge = kwargs.pop('challenge', None)
         super().__init__(*args, **kwargs)
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if self.user:
-            instance.user = self.user
-        if self.challenge:
-            instance.challenge = self.challenge
-        if commit:
-            instance.save()
-        return instance
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.instance.pk:
+            submission = self.instance
+            if submission.image1 and submission.image2 and submission.image3:
+                raise forms.ValidationError("You cannot upload more than 3 images.")
+        return cleaned_data
 
 class CommentForm(forms.ModelForm):
     class Meta:
