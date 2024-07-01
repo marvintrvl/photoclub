@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto w-[75vw]">
+<div class="bg-fgreen-800 rounded-lg mt-12 mb-8 mx-auto sm:w-[95vw] md:w-[75vw]">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-3xl font-bold mb-4 text-center">{{ meetup.title }}</h1>
         
@@ -14,11 +14,11 @@
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Ort: </span> {{ meetup.location }}</p>
         <p class="text-gray-400"><span class="text-xl font-bold mb-2">Thema: </span> {{ meetup.topic }}</p>
         {% if meetup.google_maps_link %}
-            <a href="{{ meetup.google_maps_link }}" class="bg-forange-300 py-1 px-2 rounded-lg text-white mt-2 inline-block">Treffpunkt</a>
+            <a href="{{ meetup.google_maps_link }}" class="bg-forange-300 py-1 px-2 rounded-lg hover:bg-fgreen-900 transition duration-300 mt-2 inline-block">Treffpunkt auf Google Maps ansehen</a>
         {% endif %}
 
         <div class="mt-8">
-            <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>img:not(:first-child)]:mt-8">
+            <div class="columns-1 gap-5 sm:gap-8 md:columns-2 lg:columns-3 [&>img:not(:first-child)]:mt-8">
             {% for image in meetup.images.all %}
                 <div class="first:mt-0 relative mt-4">
                     
@@ -36,7 +36,7 @@
                     {% if user.is_authenticated and image.user == user %}
                         <form method="post" action="{% url 'meetup_image_delete' meetup.id image.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="py-1 px-2 bg-forange-300 absolute top-2 right-2 bg-red-500 text-white rounded-full p-1">Löschen</button>
+                            <button type="submit" class="py-1 px-2 bg-forange-300 absolute top-2 right-2 hover:bg-fgreen-900 transition duration-300 rounded-full p-1">Löschen</button>
                         </form>
                     {% endif %}
                 </div>
@@ -57,12 +57,12 @@
                     {% if user in meetup.attendees.all %}
                         <form method="post" action="{% url 'leave_meetup' meetup.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg text-white">Dejoin Meetup</button>
+                            <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg text-whitehover:bg-fgreen-900 transition duration-300">Dejoin Meetup</button>
                         </form>
                     {% else %}
                         <form method="post" action="{% url 'join_meetup' meetup.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg text-white">Join Meetup</button>
+                            <button type="submit" class="bg-forange-300 py-1 px-2 rounded-lg hover:bg-fgreen-900 transition duration-300">Join Meetup</button>
                         </form>
                     {% endif %}
                 {% endif %}
@@ -76,19 +76,71 @@
         </div>        
         
         <div class="flex justify-end items-center mt-4">
-            <a href="{% url 'meetup_list' %}" class="py-1 px-2 bg-forange-300 rounded-lg">Zurück zur Übersicht</a>
+            <a href="{% url 'meetup_list' %}" class="py-1 px-2 bg-forange-300 rounded-lg hover:bg-fgreen-900 transition duration-300">Zurück zur Übersicht</a>
         </div>
 
         {% if user.is_authenticated %}
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Bild hochladen</h2>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg py-1 px-2 bg-forange-300 ">Hochladen</button>
-            </form>
-        </div>
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold mb-4">Bild hochladen</h2>
+                <form id="uploadForm" method="post" action="{% url 'meetup_detail' meetup.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" id="uploadButton" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg py-1 px-2 bg-forange-300">Hochladen</button>
+                </form>
+                <div id="progressBarContainer" class="w-full bg-gray-200 rounded-full h-2.5 mb-4 hidden">
+                    <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+                <div id="uploadStatus" class="mb-4"></div>
+                <div id="meetupImages"></div>
+            </div>
         {% endif %}
     </div>
 </div>
 {% endblock %}
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    
+    document.getElementById('progressBarContainer').classList.remove('hidden');
+    document.getElementById('uploadStatus').textContent = 'Verarbeite Bild...';
+
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            document.getElementById('progressBar').style.width = percentComplete + '%';
+            document.getElementById('uploadStatus').textContent = 'Lade hoch: ' + Math.round(percentComplete) + '%';
+        }
+    };
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                const imageContainer = document.getElementById('meetupImages');
+                const newImageDiv = document.createElement('div');
+                const newImage = document.createElement('img');
+                newImage.src = response.image_url;
+                newImage.className = 'w-full h-auto rounded-lg';
+                newImageDiv.appendChild(newImage);
+                imageContainer.appendChild(newImageDiv);
+                document.getElementById('uploadStatus').textContent = 'Bild erfolgreich hochgeladen!';
+            } else {
+                document.getElementById('uploadStatus').textContent = 'Fehler beim Hochladen des Bildes.';
+            }
+        } else {
+            document.getElementById('uploadStatus').textContent = 'Fehler beim Hochladen des Bildes.';
+        }
+        document.getElementById('progressBar').style.width = '0%';
+        document.getElementById('progressBarContainer').classList.add('hidden');
+        document.getElementById('uploadForm').reset();
+    };
+    
+    xhr.send(formData);
+});
+</script>    

@@ -12,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&on%)(ii+r+y6@=^ky8g!vrcem3+yu1f(flphb_cn5u**n^+i_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['fototreff-dresden.de']
+ALLOWED_HOSTS = ['fototreff-dresden.de', '127.0.0.1']
 
 # Internationalization settings
 USE_I18N = True
@@ -151,23 +151,3 @@ EMAIL_HOST_PASSWORD = 'moxb mlzs jndh drwv'
 DEFAULT_FROM_EMAIL = 'menz.marvin@gmail.com'
 ADMIN_EMAIL = 'menz.marvin@gmail.com'
 CONTACT_EMAIL = 'menz.marvin@gmail.com' 
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'django_debug.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
-

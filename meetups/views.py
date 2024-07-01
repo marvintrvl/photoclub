@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Meetup, MeetupImage
 from .forms import MeetupForm, MeetupImageForm
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.utils import timezone
 from django.contrib import messages
 from django.urls import reverse
@@ -18,36 +18,32 @@ def meetup_list(request):
 
 def meetup_detail(request, pk):
     meetup = get_object_or_404(Meetup, pk=pk)
+    
     if request.method == 'POST':
-        form = MeetupImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            meetup_image = form.save(commit=False)
-            meetup_image.meetup = meetup
-            meetup_image.user = request.user
-            meetup_image.save()
-            return redirect('meetup_detail', pk=meetup.id)
+        if request.user.is_authenticated:
+            form = MeetupImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                meetup_image = form.save(commit=False)
+                meetup_image.meetup = meetup
+                meetup_image.user = request.user
+                meetup_image.save()
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'image_url': meetup_image.image.url})
+                return redirect('meetup_detail', pk=meetup.id)
+        else:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
     else:
         form = MeetupImageForm()
     
-    user_picture = request.user.picture.url if request.user.picture else None
+    user_picture = request.user.picture.url if request.user.is_authenticated and hasattr(request.user, 'picture') else None
+    username = request.user.username if request.user.is_authenticated else "Guest"
     
     return render(request, 'meetups/meetup_detail.html', {
         'meetup': meetup,
         'form': form,
         'user_picture': user_picture,
-        'username': request.user.username,
+        'username': username,
     })
-
-@login_required
-def delete_meetup_image(request, meetup_id, image_id):
-    meetup = get_object_or_404(Meetup, id=meetup_id)
-    image = get_object_or_404(MeetupImage, id=image_id)
-    if image.user != request.user:
-        return HttpResponseForbidden()
-    if request.method == 'POST':
-        image.delete()
-        return redirect('meetup_detail', pk=meetup.id)
-    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup})
 
 @login_required
 def add_meetup_image(request, meetup_id):
@@ -59,8 +55,19 @@ def add_meetup_image(request, meetup_id):
             image.meetup = meetup
             image.user = request.user
             image.save()
-            return redirect('meetup_detail', pk=meetup.id)
-    return redirect('meetup_detail', pk=meetup.id)
+            return JsonResponse({'success': True, 'image_url': image.image.url})
+    return JsonResponse({'success': False})
+
+@login_required
+def delete_meetup_image(request, meetup_id, image_id):
+    meetup = get_object_or_404(Meetup, id=meetup_id)
+    image = get_object_or_404(MeetupImage, id=image_id)
+    if image.user != request.user:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        image.delete()
+        return redirect('meetup_detail', pk=meetup.id)
+    return render(request, 'meetups/meetup_detail.html', {'meetup': meetup})
 
 @login_required
 def meetup_list_private(request):

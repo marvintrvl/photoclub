@@ -1,2 +1,3 @@
 node_modules
 gunicorn.sock
+db.sqlite3

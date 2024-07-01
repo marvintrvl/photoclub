@@ -1,15 +1,15 @@
 {% extends 'main/base.html' %}
 {% block content %}
-<h1 class="text-2xl w-[75vw] font-bold mb-4 mt-12 text-center">Foto-Challenges</h1>
-<div class="bg-fgreen-600 text-fgray-50 pt-12 pb-16 mt-12">
+<h1 class="text-2xl sm:w-[95vw] md:w-[75vw] font-bold mb-4 mt-12 text-center">Foto-Challenges</h1>
+<div class="bg-fgreen-600 text-fgray-50 pt-12 pb-16 mt-12 sm:w-[95vw] md:w-[75vw]">
     <div class="text-fgray-50 pb-16 mb-8">
         <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Laufende Foto-Challenges</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
             {% for challenge in upcoming_challenges %}
-            <div class="bg-gray-800 p-4 flex flex-col justify-start md:justify-center items-start">
+            <div class="bg-gray-800 p-4 flex flex-col md:justify-start sm:max-md:items-center items-start sm:max-md:text-center">
                 <h2 class="text-white text-lg font-bold">{{ challenge.name }}</h2>
                 <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Challenge endet am:</strong> {{ challenge.end_date }}</p>
-                <a href="{% url 'photo_challenge:photo_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Jetzt teilnehmen</a>
+                <a href="{% url 'photo_challenge:photo_challenge_detail' challenge.pk %}" class="hover:bg-fgreen-900 transition duration-300 mt-2 py-1 px-2 bg-forange-300 rounded-lg">Jetzt teilnehmen</a>
             </div>
             {% empty %}
             <div class="text-white">Es gibt zurzeit keine neuen Foto-Challenges. Bitte schauen Sie später noch einmal vorbei.</div>
@@ -19,17 +19,17 @@
 </div>
 
 <!-- Vergangene Challenges Sektion -->
-<div class="bg-fblue-950 text-fgray w-[75vw] pt-12 pb-16">
+<div class="bg-fblue-950 text-fgray sm:w-[95vw] md:w-[75vw] pt-12 pb-16">
     <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Vergangene Foto-Challenges</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
         {% for challenge in past_challenges %}
-        <div class="bg-gray-800 p-4 flex flex-col justify-center items-start">
+        <div class="bg-gray-800 p-4 flex flex-col md:justify-start sm:max-md:items-center items-start sm:max-md:text-center">
             <h2 class="text-white text-lg font-bold">{{ challenge.name }}</h2>
             <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Endete am:</strong> {{ challenge.end_date }}</p>
-            <a href="{% url 'photo_challenge:photo_challenge_detail' challenge.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Ergebnisse</a>
+            <a href="{% url 'photo_challenge:photo_challenge_detail' challenge.pk %}" class="hover:bg-fgreen-900 transition duration-300 mt-2 py-1 px-2 bg-forange-300 rounded-lg">Ergebnisse</a>
         </div>
         {% empty %}
-        <div class="text-white">Es gibt keine vergangenen Foto-Challenges. Bitte schauen Sie später noch einmal vorbei.</div>
+        <div class="text-white sm:max-md:text-center">Es gibt keine vergangenen Foto-Challenges. Bitte schauen Sie später noch einmal vorbei.</div>
         {% endfor %}
     </div>
 </div>

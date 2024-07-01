@@ -4,6 +4,41 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.urls import reverse
+from django.core.files.base import ContentFile
+from PIL import Image
+import io
+
+def resize_and_compress_image(image_field, target_pixels=3000000, max_file_size=300*1024):
+    img = Image.open(image_field)
+    
+    # Convert to RGB if it's not
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Calculate new size
+    width, height = img.size
+    aspect_ratio = width / height
+    new_width = int((target_pixels * aspect_ratio) ** 0.5)
+    new_height = int(target_pixels / new_width)
+    
+    # Resize
+    img = img.resize((new_width, new_height), Image.LANCZOS)
+    
+    # Compress
+    output = io.BytesIO()
+    img.save(output, format='JPEG', quality=85, optimize=True)
+    output.seek(0)
+    
+    # Further compress if still over max_file_size
+    if output.getbuffer().nbytes > max_file_size:
+        quality = 85
+        while output.getbuffer().nbytes > max_file_size and quality > 10:
+            output = io.BytesIO()
+            img.save(output, format='JPEG', quality=quality, optimize=True)
+            output.seek(0)
+            quality -= 5
+
+    return ContentFile(output.getvalue(), name=image_field.name.split('.')[0] + '.jpg')
 
 class EditingChallenge(models.Model):
     name = models.CharField(max_length=200)
@@ -28,6 +63,11 @@ class EditingChallenge(models.Model):
     def get_absolute_url(self):
         return reverse('editing_challenge:editing_challenge_detail', kwargs={'pk': self.pk})
 
+    def save(self, *args, **kwargs):
+        if self.raw_preview:
+            self.raw_preview = resize_and_compress_image(self.raw_preview)
+        super().save(*args, **kwargs)
+
 class EditingChallengeSubmission(models.Model):
     challenge = models.ForeignKey(EditingChallenge, related_name='submissions', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -38,6 +78,11 @@ class EditingChallengeSubmission(models.Model):
 
     def __str__(self):
         return f"Submission by {self.user.username} for {self.challenge.name}"
+
+    def save(self, *args, **kwargs):
+        if self.edited_image:
+            self.edited_image = resize_and_compress_image(self.edited_image)
+        super().save(*args, **kwargs)
 
 class EditingChallengeComment(models.Model):
     submission = models.ForeignKey(EditingChallengeSubmission, related_name='comments', on_delete=models.CASCADE)

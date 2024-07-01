@@ -11,6 +11,7 @@ from datetime import timedelta
 from django.db import models
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 class PhotoChallengeListView(ListView):
     model = PhotoChallenge
@@ -163,6 +164,34 @@ def add_comment(request, submission_id, image_number):
             print(f"Form errors: {form.errors}")  # Add this line for debugging
     return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)
 
+@login_required
+def edit_comment(request, comment_id):
+    comment = get_object_or_404(PhotoChallengeComment, id=comment_id)
+    if comment.user != request.user:
+        raise PermissionDenied("You are not allowed to edit this comment.")
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Comment updated successfully.")
+        return redirect('photo_challenge:photo_challenge_detail', pk=comment.submission.challenge.id)
+    elif request.method == 'GET' and request.is_ajax():
+        return JsonResponse({'text': comment.text})
+
+    return redirect('photo_challenge:photo_challenge_detail', pk=comment.submission.challenge.id)
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(PhotoChallengeComment, id=comment_id)
+    if comment.user != request.user:
+        raise PermissionDenied("You are not allowed to delete this comment.")
+    
+    challenge_id = comment.submission.challenge.id
+    comment.delete()
+    messages.success(request, "Comment deleted successfully.")
+    return redirect('photo_challenge:photo_challenge_detail', pk=challenge_id)
+
 def determine_winner():
     now = timezone.now().date()
     challenges = PhotoChallenge.objects.filter(end_date__lt=now, end_date__gte=now - timedelta(days=7))
@@ -199,14 +228,14 @@ def delete_submission_image(request, submission_id, image_number):
         raise PermissionDenied("You are not allowed to delete this image.")
 
     # Remove the image field
-    if image_number == 1:
-        submission.image1.delete()
+    if image_number == 1 and submission.image1:
+        submission.image1.delete(save=False)
         submission.image1 = None
-    elif image_number == 2:
-        submission.image2.delete()
+    elif image_number == 2 and submission.image2:
+        submission.image2.delete(save=False)
         submission.image2 = None
-    elif image_number == 3:
-        submission.image3.delete()
+    elif image_number == 3 and submission.image3:
+        submission.image3.delete(save=False)
         submission.image3 = None
     
     # Delete associated votes and comments
@@ -216,4 +245,3 @@ def delete_submission_image(request, submission_id, image_number):
     submission.save()
     messages.success(request, "Image and its associated votes and comments deleted successfully.")
     return redirect('photo_challenge:photo_challenge_detail', pk=submission.challenge.id)
-

@@ -2,7 +2,7 @@
 {% load custom_filters %}
 
 {% block content %}
-<div class="mt-12 mx-auto mb-8 min-w-[300px] w-[75vw] flex flex-grow">
+<div class="mt-12 mx-auto mb-8 min-w-[300px] sm:w-[95vw] md:w-[75vw] flex flex-grow">
     <div class="mx-auto rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold mb-4">{{ member.username }}</h1>
         <img src="{{ member.picture.url }}" alt="{{ member.username }}" class="w-48 h-48 object-fit rounded-sm mb-4">
@@ -57,9 +57,11 @@
             {% for category in member.categories.all %}
                 <div class="mb-6">
                     <h3 class="text-xl font-semibold mb-2">{{ category.name }}</h3>
-                    <div class="columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-3 [&>img:not(:first-child)]:mt-8">
+                    <div class="gap-5 sm:columns-1 sm:gap-8 md:columns-2 lg:columns-3 [&>img:not(:first-child)]:mt-8">
                         {% for photo in category.photos.all %}
-                            <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
+                            <a href="{{ photo.image.url }}" data-lightbox="roadtrip">
+                                <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
+                            </a>
                         {% empty %}
                             <p class="text-gray-400">Es wurden noch keine Bilder in dieser Kategorie hochgeladen.</p>
                         {% endfor %}

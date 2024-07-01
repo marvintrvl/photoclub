@@ -5,9 +5,9 @@
 <div class="hero relative">
     {% if image_of_the_day %}
         <img src="{{ image_of_the_day.image.url }}" alt="Image of the day" class="w-full h-auto object-cover">
-        <div class="rounded-2xl bg-fgray-100 bg-opacity-70 py-1 px-6 absolute bottom-12 right-28 p-4 bg-black">
-            <p class="text-base text-fgray-950 block">&#169 {{ image_of_the_day.user.username }}</p>
-            <a href="{% url 'members:member_detail' image_of_the_day.user.username %}" class="text-fgray-950 text-base uppercase">Zum Profil</a>
+        <div class="rounded-2xl bg-fgray-100 bg-opacity-70 md:py-1 md:px-6 absolute bottom-4 right-8 md:bottom-12 md:right-28 py-1 px-2 bg-black">
+            <p class="text-sm md:text-base text-fgray-950 block">&#169 {{ image_of_the_day.user.username }}</p>
+            <a href="{% url 'members:member_detail' image_of_the_day.user.username %}" class="text-fgray-950 text-sm md:text-base uppercase">Zum Profil</a>
         </div>
     {% else %}
         <img src="{% static 'images/hero1.jpg' %}" alt="Hero Image" class="w-full h-auto object-cover">
@@ -15,10 +15,10 @@
 </div>
 
 <div class="bg-fblue-950 text-fgray-50 pt-12 pb-16">
-    <h2 class="mx-24 text-3xl font-normal text-white uppercase">
+    <h2 class="sm:mx-[2.5vw] md:mx-24 text-3xl font-normal text-white uppercase sm:max-md:text-center">
         Herzlich Willkommen
     </h2>
-    <div class="pb-12 mx-24 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
+    <div class="sm:mx-[2.5vw] pb-12 md:mx-24 grid grid-cols-1 md:grid-cols-2 gap-12 mt-8 sm:max-md:text-justify">
         <div>
             <p class="text-white font-light">
                 Herzlich willkommen in unserer Fototreff-Gruppe Dresden! Wir freuen uns sehr, dich in unserer Gemeinschaft von Hobbyfotografen begrüßen zu dürfen. Bei unseren regelmäßigen Treffen haben wir die Gelegenheit, gemeinsam auf Fototour zu gehen, uns auszutauschen und voneinander zu lernen. <br /><br />
@@ -28,33 +28,35 @@
                 Dein Fototreff-Team Dresden
             </p>
         </div>
-        <div>
+        
+        <div class="sm:max-md:text-center">
             <!-- Display the upcoming meetup details here -->
             {% if upcoming_meetup %}
-            <h3 class="text-2xl font-light text-white uppercase">
-                Unser nächster Fototreff
-            </h3>
-            <p class="text-white font-light mt-8">
-                <strong class="uppercase">Wann:</strong> {{ upcoming_meetup.date }}, {{ upcoming_meetup.time }} <br />
-                <strong class="uppercase">Wo:</strong> {{ upcoming_meetup.location }} <br />
-                <strong class="uppercase">Thema:</strong> {{ upcoming_meetup.topic }} <br /><br />
-                <strong>Kurzbeschreibung:</strong> {{ upcoming_meetup.short_description }} <br />
-            </p>
+                <h3 class="text-2xl font-light text-white uppercase">
+                    Unser nächster Fototreff
+                </h3>
+                <p class="text-white font-light mt-8">
+                    <strong class="uppercase">Wann:</strong> {{ upcoming_meetup.date }}, {{ upcoming_meetup.time }} <br />
+                    <strong class="uppercase">Wo:</strong> {{ upcoming_meetup.location }} <br />
+                    <strong class="uppercase">Thema:</strong> {{ upcoming_meetup.topic }} <br /><br />
+                    <strong>Kurzbeschreibung:</strong> {{ upcoming_meetup.short_description }} <br />
+                    <a href="{% url 'meetup_detail' upcoming_meetup.pk %}" class="mt-4 inline-block bg-forange-300 text-white px-2 py-1 rounded-lg hover:bg-fgreen-900 transition duration-300">Details ansehen</a>
+                </p>
             {% else %}
-            <h2 class="text-3xl font-normal text-white uppercase">
-                Kein bevorstehendes Treffen
-            </h2>
-            <p class="text-white font-light mt-8">
-                Es gibt derzeit keine geplanten Treffen. Schau später noch einmal vorbei!
-            </p>
+                <h2 class="text-3xl font-normal text-white uppercase">
+                    Kein bevorstehendes Treffen
+                </h2>
+                <p class="text-white font-light mt-8">
+                    Es gibt derzeit keine geplanten Treffen. Schau später noch einmal vorbei!
+                </p>
             {% endif %}
         </div>
     </div>
 
-    <div class="bg-fgreen-600 text-fgray pb-12 pt-12">
-        <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div class="bg-fgreen-600 mx-auto text-fgray sm:w-[100vw] pb-12 pt-12">
+        <div class="sm:mx-[2.5vw] md:mx-24 grid grid-cols-1 md:grid-cols-2 gap-12 sm:max-md:text-center">
             <div>
-                <h2 class="text-3xl font-normal text-white uppercase">
+                <h2 class="text-3xl font-normal text-white uppercase ">
                     Nächste Foto Challenge
                 </h2>
                 {% if nearest_photo_challenge %}
@@ -95,12 +97,12 @@
     </div>
 
     <div class="bg-fblue-950 pt-12">
-        <div class="mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="sm:mx-[2.5vw] md:mx-24 grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-                <h3 class="text-2xl font-normal text-white uppercase">
+                <h3 class="text-2xl font-normal text-white uppercase sm:max-md:text-center">
                     Unsere neuesten Mitglieder:
                 </h3>
-                <div class="flex flex-wrap justify-start items-center gap-8 mt-8">
+                <div class="flex flex-wrap justify-center items-center gap-8 mt-8">
                     {% for user in newest_users %}
                     <div class="text-center flex flex-wrap">
                         <a href="{% url 'members:member_detail' user.username %}">
@@ -117,14 +119,14 @@
             </div>
 
             <div class="">
-                <h3 class="text-2xl font-normal text-white uppercase">
+                <h3 class="text-2xl font-normal text-white uppercase sm:max-md:text-center">
                     Haben wir dein Interesse geweckt?
                 </h3>
                 <div class="flex justify-center flex-col items-center mt-8">
-                    <p class="text-fgray-50 font-light">
+                    <p class="text-fgray-50 font-light sm:max-md:text-center">
                         Du bist herzlich eingeladen, Mitglied in unserer Fotogruppe zu werden. Wir freuen uns über jedes neue Gesicht. Als Mitglied kannst du an unseren Foto-Challenges und unseren Foto-Walks teilnehmen.
                     </p>
-                    <a href="https://discord.gg/PG3jDR7Kh7" class="bg-forange-300 py-2 px-4 rounded-lg hover:text-white font-light mt-4">Tritt unserem Discord Server bei</a>
+                    <a href="https://discord.gg/PG3jDR7Kh7" class="bg-forange-300 py-2 px-4 rounded-lg hover:bg-fgreen-900 transition duration-300 font-light mt-4">Tritt unserem Discord Server bei</a>
                 </div>
             </div>
         </div>

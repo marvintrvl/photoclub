@@ -150,6 +150,34 @@ def add_comment(request, submission_id):
             comment.save()
     return redirect('editing_challenge:editing_challenge_detail', pk=submission.challenge.id)
 
+@login_required
+def edit_comment(request, comment_id):
+    comment = get_object_or_404(EditingChallengeComment, id=comment_id)
+    if comment.user != request.user:
+        raise PermissionDenied("You are not allowed to edit this comment.")
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Comment updated successfully.")
+        return redirect('editing_challenge:editing_challenge_detail', pk=comment.submission.challenge.id)
+    elif request.method == 'GET' and request.is_ajax():
+        return JsonResponse({'text': comment.text})
+
+    return redirect('editing_challenge:editing_challenge_detail', pk=comment.submission.challenge.id)
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(EditingChallengeComment, id=comment_id)
+    if comment.user != request.user:
+        raise PermissionDenied("You are not allowed to delete this comment.")
+    
+    challenge_id = comment.submission.challenge.id
+    comment.delete()
+    messages.success(request, "Comment deleted successfully.")
+    return redirect('editing_challenge:editing_challenge_detail', pk=challenge_id)
+
 def determine_winner():
     now = timezone.now().date()
     challenges = EditingChallenge.objects.filter(end_date__lt=now, end_date__gte=now - timedelta(days=7))

@@ -1,9 +1,9 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="bg-fgreen-800 w-[75vw] rounded-lg mt-12 mb-8 mx-auto">
+<div class="bg-fgreen-800 sm:w-[95vw] md:w-[75vw] rounded-lg mt-12 mb-8 mx-auto">
     <div class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        {% for message in messages %}           
+        {% for message in messages %}
         <div id="alertBox" class="bg-forange-300 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             <span class="block sm:inline">{{ message }}</span>
             <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeAlert()">
@@ -26,7 +26,6 @@
 
             <p class="text-white text-lg leading-7 mb-4">Regeln: {{ object.details }}</p>
             <a href="{% url 'editing_challenge:editing_challenge_download' object.pk %}" class="py-1 px-2 bg-forange-300 rounded-lg text-blue-500">RAW Datei downloaden</a>
-
         </div>
 
         <h2 class="text-2xl text-center font-bold mt-8 mb-4">Einreichungen</h2>
@@ -95,7 +94,14 @@
                                     <div class="mt-2 {% if reply.user == user %}text-right{% endif %}">
                                         <div class="inline-block bg-gray-500 rounded-lg p-2 max-w-3/4">
                                             <p class="text-white">{{ reply.text }}</p>
-                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at }}</p>
+                                            <p class="text-xs text-gray-300">{{ reply.user.username }} - {{ reply.created_at|date:"d. F Y H:i" }}</p>
+                                            {% if reply.user == user %}
+                                                <button class="text-xs text-blue-400 ml-2 edit-button" data-comment-id="{{ reply.id }}" data-text="{{ reply.text }}" data-url="{% url 'editing_challenge:edit_comment' reply.id %}" data-parent-id="{{ reply.parent.id }}">Bearbeiten</button>
+                                                <form method="post" action="{% url 'editing_challenge:delete_comment' reply.id %}" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="text-xs text-red-400 ml-2">Löschen</button>
+                                                </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -103,6 +109,13 @@
                                 {% endif %}
                             </div>
                             <button class="text-xs text-blue-400 mt-1 reply-button" data-comment-id="{{ comment.id }}">Antworten</button>
+                            {% if comment.user == user %}
+                                <button class="text-xs text-blue-400 ml-2 edit-button" data-comment-id="{{ comment.id }}" data-text="{{ comment.text }}" data-url="{% url 'editing_challenge:edit_comment' comment.id %}" data-parent-id="{{ comment.parent.id }}">Bearbeiten</button>
+                                <form method="post" action="{% url 'editing_challenge:delete_comment' comment.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-xs text-red-400 ml-2">Löschen</button>
+                                </form>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
@@ -110,7 +123,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="parent" class="parent-comment-id">
                         <input type="text" name="text" placeholder="Kommentar schreiben..." class="flex-grow p-1 rounded-l-lg">
-                        <button type="submit" class="bg-forange-300 text-fgray-50 font-bold rounded-r-lg py-2 px-4">Senden</button>
+                        <button type="submit" class="hover:bg-fgreen-900 transition duration-300 bg-forange-300 text-fgray-50 font-bold rounded-r-lg py-2 px-4">Senden</button>
                     </form>
                 </div>
             </li>
@@ -123,7 +136,7 @@
             <form method="post" enctype="multipart/form-data" action="{% url 'editing_challenge:editing_submission_create' object.id %}">
                 {% csrf_token %}
                 {{ submission_form.as_p }}
-                <button type="submit" class="mt-4 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Hochladen</button>
+                <button type="submit" class="mt-4 hover:bg-fgreen-900 transition duration-300 bg-forange-300 text-white font-bold rounded-lg py-1 px-2">Hochladen</button>
             </form>
         </div>
         {% endif %}
@@ -137,8 +150,9 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         const toggleCommentsButtons = document.querySelectorAll('.toggle-comments-button');
-        const parentCommentIdInput = document.querySelectorAll('.parent-comment-id');
-        const commentForms = document.querySelectorAll('.comment-form');
+        const replyButtons = document.querySelectorAll('.reply-button');
+        const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-button');
+        const editButtons = document.querySelectorAll('.edit-button');
 
         toggleCommentsButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -153,7 +167,6 @@
             });
         });
 
-        const replyButtons = document.querySelectorAll('.reply-button');
         replyButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const commentId = this.getAttribute('data-comment-id');
@@ -165,12 +178,26 @@
             });
         });
 
-        const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-button');
         toggleRepliesButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const repliesContainer = this.closest('.bg-gray-600').querySelector('.replies-container');
                 repliesContainer.classList.toggle('hidden');
                 this.textContent = repliesContainer.classList.contains('hidden') ? 'Antworten anzeigen' : 'Antworten verbergen';
+            });
+        });
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                const commentText = this.getAttribute('data-text');
+                const commentUrl = this.getAttribute('data-url');
+                const parentCommentId = this.getAttribute('data-parent-id'); // Add this line
+                const commentForm = this.closest('.comments-container').querySelector('.comment-form');
+
+                commentForm.querySelector('input[name="text"]').value = commentText;
+                commentForm.querySelector('.parent-comment-id').value = parentCommentId; // Add this line
+                commentForm.setAttribute('action', commentUrl);
+                commentForm.classList.remove('hidden');
             });
         });
     });

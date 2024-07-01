@@ -3,16 +3,16 @@
 {% block content %}
 <h1 class="text-2xl font-bold mb-4 text- mt-12 text-center">Unsere Treffen</h1>
 
-<div class="bg-fgreen-600 w-[75vw] text-fgay-50 pt-12 pb-16 mt-12">
+<div class="bg-fgreen-600 sm:w-[95vw] md:w-[75vw] text-fgay-50 pt-12 md:pb-16 mt-12">
     <div class="text-fgray-50 pb-16 mb-8">
         <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Unsere nächsten Treffen</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
             {% for meetup in upcoming_meetups %}
-            <div class="bg-gray-800 p-4 flex flex-col justify-start md:justify-center items-start">
+            <div class="bg-gray-800 p-4 flex flex-col md:justify-start sm:max-md:items-center items-start sm:max-md:text-center">
                 <h2 class="text-white text-lg font-bold">{{ meetup.title }}</h2>
-                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}</p>
+                <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}, {{ meetup.time }} Uhr</p>
                 <p class="text-gray-400 font-light"><strong class="uppercase">Thema:</strong> {{ meetup.topic }}</p>
-                <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
+                <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg hover:bg-fgreen-900 transition duration-300">Details</a>
             </div>
             {% empty %}
             <div class="text-white">Keine kommenden Treffen gefunden.</div>
@@ -22,15 +22,15 @@
 </div>
 
     <!-- Past Meetups Section -->
-<div class="bg-fblue-950 w-[75vw] text-fgray pt-12 pb-16">
+<div class="bg-fblue-950 sm:w-[95vw] md:w-[75vw] text-fgray pt-12 pb-16">
     <h2 class="text-3xl font-normal text-white uppercase text-center mb-8">Vergangene Treffen</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-24">
         {% for meetup in past_meetups %}
-        <div class="bg-gray-800 p-4 flex flex-col justify-center items-start">
+        <div class="bg-gray-800 p-4 flex flex-col justify-center items-center md:items-start sm:max-md:text-center">
             <h2 class="text-white text-lg font-bold">{{ meetup.title }}</h2>
-            <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}</p>
+            <p class="text-gray-400 font-light mt-2"><strong class="uppercase">Wann:</strong> {{ meetup.date }}, {{ meetup.time }}</p>
             <p class="text-gray-400 font-light"><strong class="uppercase">Thema:</strong> {{ meetup.topic }}</p>
-            <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg">Details</a>
+            <a href="{% url 'meetup_detail' meetup.pk %}" class="mt-2 py-1 px-2 bg-forange-300 rounded-lg hover:bg-fgreen-900 transition duration-300">Details</a>
         </div>
         {% empty %}
         <div class="text-white">Keine vergangenen Treffen gefunden.</div>
