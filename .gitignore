@@ -1,3 +1,4 @@
 node_modules
 gunicorn.sock
 db.sqlite3
+photoclub/settings.py

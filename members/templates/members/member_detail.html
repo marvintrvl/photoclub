@@ -57,11 +57,13 @@
             {% for category in member.categories.all %}
                 <div class="mb-6">
                     <h3 class="text-xl font-semibold mb-2">{{ category.name }}</h3>
-                    <div class="gap-5 sm:columns-1 sm:gap-8 md:columns-2 lg:columns-3 [&>img:not(:first-child)]:mt-8">
+                    <div class="gap-5 sm:columns-1 sm:gap-8 md:columns-2 lg:columns-3">
                         {% for photo in category.photos.all %}
-                            <a href="{{ photo.image.url }}" data-lightbox="roadtrip">
-                                <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
-                            </a>
+                            <div class="first:mt-1 relative mt-4">
+                                <a href="{{ photo.image.url }}" data-lightbox="roadtrip">
+                                    <img src="{{ photo.image.url }}" alt="Photo in {{ category.name }}" class="w-full h-auto object-cover rounded-md">
+                                </a>
+                            </div>
                         {% empty %}
                             <p class="text-gray-400">Es wurden noch keine Bilder in dieser Kategorie hochgeladen.</p>
                         {% endfor %}
