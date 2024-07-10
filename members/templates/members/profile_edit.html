@@ -81,12 +81,12 @@
                 {% endif %}
 
                 <div class="mb-8">
-                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Change Password</h2>
+                    <h2 class="text-lg font-bold mb-2 text-fgray-50">Passwort ändern</h2>
                     <form method="post" action="{% url 'members:profile_edit' %}">
                         {% csrf_token %}
                         {{ password_form.as_p }}
                         <input type="hidden" name="change_password" value="1">
-                        <button type="submit" class="bg-forange-300 text-fgray-50 px-4 py-2 rounded-md hover:bg-gray-700">Change Password</button>
+                        <button type="submit" class="bg-forange-300 text-fgray-50 px-4 py-2 rounded-md hover:bg-gray-700">Passwort ändern</button>
                     </form>
                 </div>
                 
