@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from .models import CustomUser, PhotoCategory, UserPhoto, Equipment, Interest, PhotoGenre, Steckbrief
-from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm, EquipmentForm, InterestForm, PhotoGenreForm, SteckbriefForm
+from .forms import ProfileForm, LoginForm, PhotoCategoryForm, UserPhotoForm, EquipmentForm, InterestForm, PhotoGenreForm, SteckbriefForm, CustomPasswordChangeForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 
 @login_required
 def profile_edit(request):
@@ -13,6 +15,7 @@ def profile_edit(request):
     equipment_form = EquipmentForm()
     interest_form = InterestForm()
     photo_genre_form = PhotoGenreForm()
+    password_form = CustomPasswordChangeForm(user)
 
     # Ensure Steckbrief instance exists
     steckbrief, created = Steckbrief.objects.get_or_create(user=user, defaults={'image_editing': False, 'preferred_shooting': 'alone'})
@@ -22,10 +25,21 @@ def profile_edit(request):
     category_form = PhotoCategoryForm()
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('members:profile_edit')
+        if 'change_password' in request.POST:
+            password_form = CustomPasswordChangeForm(user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)  # Important!
+                messages.success(request, 'Your password was successfully updated!')
+                return redirect('members:profile_edit')
+            else:
+                messages.error(request, 'Please correct the error below.')
+        else:
+            form = ProfileForm(request.POST, request.FILES, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile was successfully updated!')
+                return redirect('members:profile_edit')
     
     context = {
         'form': form,
@@ -35,6 +49,7 @@ def profile_edit(request):
         'steckbrief_form': steckbrief_form,
         'categories': categories,
         'category_form': category_form,
+        'password_form': password_form,
     }
     return render(request, 'members/profile_edit.html', context)
 

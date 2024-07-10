@@ -870,10 +870,6 @@ video {
   width: 24rem;
 }
 
-.w-\[500px\] {
-  width: 500px;
-}
-
 .w-\[75vw\] {
   width: 75vw;
 }
@@ -1354,6 +1350,10 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .transition {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
@@ -1576,10 +1576,6 @@ video {
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
-
-.\[\&\>a\:not\(\:first-child\)\]\:mt-8>a:not(:first-child) {
-  margin-top: 2rem;
 }
 
 .\[\&\>img\:not\(\:first-child\)\]\:mt-8>img:not(:first-child) {

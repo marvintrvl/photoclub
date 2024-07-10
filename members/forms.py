@@ -1,5 +1,13 @@
 from django import forms
 from .models import CustomUser, PhotoCategory, UserPhoto, Equipment, Interest, PhotoGenre, Steckbrief
+from django.contrib.auth.forms import PasswordChangeForm
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({'class': 'text-fgray-950 mb-2 block w-full'})
+        self.fields['new_password1'].widget.attrs.update({'class': 'text-fgray-950 mb-2 block w-full'})
+        self.fields['new_password2'].widget.attrs.update({'class': 'text-fgray-950 mb-2 block w-full'})
 
 class ProfileForm(forms.ModelForm):
     class Meta:
