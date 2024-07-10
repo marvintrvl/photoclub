@@ -10,7 +10,7 @@
             <div class="bg-fgreen-800 rounded-lg p-4">
                 <h1 class="text-3xl font-bold mb-4 text-fgray-50">Profil bearbeiten</h1>
 
-                <form method="post" enctype="multipart/form-data" action="{% url 'members:profile_edit' %}" class="mb-4">
+                <form method="post" enctype="multipart/form-data" action="{% url 'members:profile_edit' %}" class="mb-8">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     <div class="mb-4">
