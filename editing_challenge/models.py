@@ -110,4 +110,4 @@ class EditingChallengeVote(models.Model):
 
     @staticmethod
     def can_vote(user, submission):
-        return EditingChallengeVote.user_vote_count(user, submission.challenge) < 3 and not EditingChallengeVote.objects.filter(user=user, submission=submission).exists()
+        return EditingChallengeVote.user_vote_count(user, submission.challenge) < 1 and not EditingChallengeVote.objects.filter(user=user, submission=submission).exists()
